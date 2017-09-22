@@ -66,31 +66,32 @@ int main()
       break;
 
     case 11:
-      // Exits the program
+      /* Exits the program */
       return 0;
       break;
     }
   }
 }
 
+/* Compute pi with 4(1 - 1/3 + 1/5 - 1/7 + 1/9...) */
 double compute_pi(int n)
 {
   double pi = 1.0;
-  double denominator = 0.0;
+  double term = 0.0;
   BOOLEAN add = FALSE;
 
   for (int i = 0; i < n; i++)
   {
-    denominator = 1 / (3.0 + i * 2);
+    term = 1 / (3.0 + i * 2);
 
     if (add)
     {
-      pi += denominator;
+      pi += term;
       add = FALSE;
     }
     else
     {
-      pi -= denominator;
+      pi -= term;
       add = TRUE;
     }
   }
