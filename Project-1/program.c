@@ -81,6 +81,7 @@ double compute_pi(int n)
 
   for (int i = 0; i < n; i++)
   {
+    // TODO: rename this its no longer the denominator
     denominator = 1 / (3.0 + i * 2);
 
     if (add)
