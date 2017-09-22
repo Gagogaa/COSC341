@@ -5,9 +5,13 @@
 #define BOOLEAN int
 
 double compute_pi(int n);
+double compute_sqrt(double x);
+int is_prime(int n);
+void display_primes(int n);
 
 int main()
 {
+  
   char* message =
     "1-Computing pi\n\
 2-Computing square root\n\
@@ -22,23 +26,25 @@ int main()
 11-quit\n";
 
   int response;
+  int pi_terms;
 
-  while(1)
+  while (TRUE)
   {
     printf("%s", message);
     scanf("%d", &response);
-      
-    int pi_terms;
-      
+
     switch (response)
     {
     case 1:
       printf("Enter N terms of pi: \n");
-      scanf("%d", &pi_terms);
-      printf("Pi is: %f\n", compute_pi(pi_terms));
+      scanf("%d", &response);
+      printf("Pi is: %f\n", compute_pi(response));
       break;
 
     case 2:
+      printf("Enter a number to square root: \n");
+      scanf("%d", &response);
+      printf("The square root of %d is %f", response, compute_sqrt((double)response));
       break;
 
     case 3:
@@ -78,23 +84,37 @@ double compute_pi(int n)
 {
   double pi = 1.0;
   double term = 0.0;
-  BOOLEAN add = FALSE;
 
   for (int i = 0; i < n; i++)
   {
     term = 1 / (3.0 + i * 2);
 
-    if (add)
-    {
+    if (i % 2)
       pi += term;
-      add = FALSE;
-    }
     else
-    {
       pi -= term;
-      add = TRUE;
-    }
   }
   
   return pi * 4;
 }
+
+double compute_sqrt(double x)
+{
+  double guess = 1;
+  
+  for (int i = 0; i < 10; i++)
+    guess = 0.5 * (guess + x / guess);
+
+  return guess;
+}
+
+int is_prime(int n)
+{
+  
+}
+
+void display_primes(int n)
+{
+  
+}
+
