@@ -8,10 +8,12 @@ double compute_pi(int n);
 double compute_sqrt(double x);
 int is_prime(int n);
 void display_primes(int n);
+void process_scores();
+double compute_tax(int income, char* status, char state);
 
 int main()
 {
-  
+
   char* message =
     "1-Computing pi\n\
 2-Computing square root\n\
@@ -26,7 +28,6 @@ int main()
 11-quit\n";
 
   int response;
-  int pi_terms;
 
   while (TRUE)
   {
@@ -54,9 +55,11 @@ int main()
       break;
 
     case 4:
+      process_scores();
       break;
 
     case 5:
+      
       break;
 
     case 6:
@@ -97,14 +100,14 @@ double compute_pi(int n)
     else
       pi -= term;
   }
-  
+
   return pi * 4;
 }
 
 double compute_sqrt(double x)
 {
   double guess = 1;
-  
+
   for (int i = 0; i < 10; i++)
     guess = 0.5 * (guess + x / guess);
 
@@ -124,7 +127,7 @@ int is_prime(int n)
 void display_primes(int n)
 {
   printf("Primes are: ");
-  
+
   for (int i = 1; i <= n; i++)
     if (is_prime(i))
       printf("%d ", i);
@@ -132,3 +135,13 @@ void display_primes(int n)
   printf("\n");
 }
 
+// TODO implement me
+void process_scores()
+{
+
+}
+
+double compute_tax(int income, char* status, char state)
+{
+
+}
