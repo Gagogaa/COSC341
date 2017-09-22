@@ -44,10 +44,13 @@ int main()
     case 2:
       printf("Enter a number to square root: \n");
       scanf("%d", &response);
-      printf("The square root of %d is %f", response, compute_sqrt((double)response));
+      printf("The square root of %d is %f\n", response, compute_sqrt((double)response));
       break;
 
     case 3:
+      printf("Enter the number of primes you want: \n");
+      scanf("%d", &response);
+      display_primes(response);
       break;
 
     case 4:
@@ -110,11 +113,22 @@ double compute_sqrt(double x)
 
 int is_prime(int n)
 {
-  
+  /* If the number is divisable by any number > 2 or < n return false */
+  for (int i = 2; i < n; i++)
+    if (!(n % i))
+      return FALSE;
+
+  return TRUE;
 }
 
 void display_primes(int n)
 {
+  printf("Primes are: ");
   
+  for (int i = 1; i <= n; i++)
+    if (is_prime(i))
+      printf("%d ", i);
+
+  printf("\n");
 }
 
