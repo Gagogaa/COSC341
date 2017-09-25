@@ -49,7 +49,7 @@ int main()
       break;
 
     case 3:
-      printf("Enter the number of primes you want: \n");
+      printf("Enter a number to compute primes up to: \n");
       scanf("%d", &response);
       display_primes(response);
       break;
