@@ -28,7 +28,7 @@ void prompt(char* message, char* input, void* ptr)
 
 int main()
 {
-  const char* message =
+  const char* menu_text =
     "1-Computing pi\n\
 2-Computing square root\n\
 3-Displaying primes\n\
@@ -48,7 +48,7 @@ int main()
 
   while (TRUE)
   {
-    printf("%s", message);
+    printf("%s", menu_text);
     scanf("%d", &response);
 
     switch (response)
@@ -96,14 +96,12 @@ int main()
 
     case 6:
       // TODO It's not reading in the values into a, b, or c
-      prompt("Enter in a value for a: ", "%f", &a);
-      prompt("Enter in a value for b: ", "%f", &b);
-      prompt("Enter in a value for c: ", "%f", &c);
-
-      printf("a: %f, b: %f, c: %f\n", a, b ,c);
+      prompt("Enter in a value for a: ", "%lf", &a);
+      prompt("Enter in a value for b: ", "%lf", &b);
+      prompt("Enter in a value for c: ", "%lf", &c);
 
       if (quadratic(a, b, c, &solution1, &solution2))
-	printf("The solutions are %f, %f\n", solution1, solution2);
+	printf("The solutions are %lf, %lf\n", solution1, solution2);
       else
 	printf("The quadratic of %f, %f, %f has no solution.\n", a, b, c);
       break;
@@ -276,8 +274,12 @@ int quadratic(double a, double b, double c, double *solution1, double *solution2
   if (discriminant < 0)
     return FALSE;
 
-  *solution1 = (- b + compute_sqrt(discriminant)) / (2 * a);
-  *solution1 = (- b - compute_sqrt(discriminant)) / (2 * a);
+  // TODO: see why sin is not working here
+  b -= b * 2;
+  
+  *solution1 = b + compute_sqrt(discriminant) / (2 * a);
+  *solution2 = b - compute_sqrt(discriminant) / (2 * a);
+  
   return TRUE;
 }
 
