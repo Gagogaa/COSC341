@@ -266,7 +266,6 @@ double compute_tax(int income, char* status, char state)
 int quadratic(double a, double b, double c, double *solution1, double *solution2)
 {
   double discriminant = (b * b) - (4 * a * c);
-  printf("The discriminant is: %f\n", discriminant);
   
   *solution1 = 0;
   *solution2 = 0;
