@@ -14,7 +14,7 @@ int is_prime(int n);
 void display_primes(int n);
 void process_scores();
 double compute_tax(int income, char* status, char state);
-/* int quadratic(double a, double b, double c, double *solution1, double *solution2); */
+int quadratic(double a, double b, double c, double *solution1, double *solution2);
 int factorial(int n);
 /* void file_count(char *file, int *characters, int *lines); */
 
@@ -44,6 +44,7 @@ int main()
   int response, income;
   char *status, response_str[] = "";
   char state;
+  double a, b, c, solution1, solution2;
 
   while (TRUE)
   {
@@ -80,9 +81,9 @@ int main()
 	status = "married";
       else
 	status = "single";
-	  
+
       prompt("Are you an instate resident? Y/N\n", "%s", response_str);
-      
+
       if (response_str[0] == 'Y' || response_str[0] == 'y')
 	state = 'i';
       else
@@ -94,7 +95,17 @@ int main()
       break;
 
     case 6:
-      /* int quadratic(double a, double b, double c, double *solution1, double *solution2); */
+      // TODO It's not reading in the values into a, b, or c
+      prompt("Enter in a value for a: ", "%f", &a);
+      prompt("Enter in a value for b: ", "%f", &b);
+      prompt("Enter in a value for c: ", "%f", &c);
+
+      printf("a: %f, b: %f, c: %f\n", a, b ,c);
+
+      if (quadratic(a, b, c, &solution1, &solution2))
+	printf("The solutions are %f, %f\n", solution1, solution2);
+      else
+	printf("The quadratic of %f, %f, %f has no solution.\n", a, b, c);
       break;
 
     case 7:
@@ -103,6 +114,7 @@ int main()
       break;
 
     case 8:
+      
       break;
 
     case 9:
@@ -170,45 +182,42 @@ void display_primes(int n)
   printf("\n");
 }
 
-// TODO get the names working and clear the warnings
 void process_scores()
 {
-  char name[] = "", *best_student, *worst_student;
+  char name[30], best_student[30], worst_student[30];
   int
     avg = 0,
     grade = 0,
     best_grade = INT_MIN,
     worst_grade = INT_MAX,
     number_of_students = 0;
-  
+
   printf("Enter student names and scores.\n\
 E.g.\n\
 > Jane 90\n");
 
-    printf("Enter q to quit.\n");
-    
+  printf("Enter q to quit.\n");
+  
+  // TODO: I think that I need to split a single string in two
   while (TRUE)
   {
     prompt("> ", "%s", name);
-    printf("%s", name);
-    
-    /* Break out if the user enters q or Q */
-    if (! strcmp(name, "q") || ! strcmp(name, "Q"));
+
+    /* break out if the user enters q or Q */
+    if (strcmp(name, "q") == 0 || strcmp(name, "Q") == 0)
       break;
 
     scanf("%d", &grade);
 
     if (grade > best_grade)
     {
-      /* free((void*)best_student); */
-      /* best_student = name; */
+      sprintf(best_student, "%s", name);
       best_grade = grade;
     }
 
     if (grade < worst_grade)
     {
-      /* free((void*)worst_student); */
-      /* worst_student = name; */
+      sprintf(worst_student, "%s", name);
       worst_grade = grade;
     }
 
@@ -218,8 +227,8 @@ E.g.\n\
   }
 
   printf("The avarage grade is: %f\n", (float)avg / number_of_students);
-  printf("The best student %s has a grade of %d.\n", &best_student, best_grade);
-  printf("The worst student %s has a grade of %d.\n", &worst_student, worst_grade);
+  printf("The best student %s has a grade of %d.\n", best_student, best_grade);
+  printf("The worst student %s has a grade of %d.\n", worst_student, worst_grade);
 }
 
 double compute_tax(int income, char* status, char state)
@@ -244,7 +253,7 @@ double compute_tax(int income, char* status, char state)
     rate += 5.0;
   else if (income < 0)
     return -1.0;
-  
+
   if (state == 'O' || state == 'o')
     rate -= 3.0;
   else if (state == 'I' || state == 'i')
@@ -256,10 +265,21 @@ double compute_tax(int income, char* status, char state)
   return rate;
 }
 
-/* int quadratic(double a, double b, double c, double *solution1, double *solution2) */
-/* { */
+int quadratic(double a, double b, double c, double *solution1, double *solution2)
+{
+  double discriminant = (b * b) - (4 * a * c);
+  printf("The discriminant is: %f\n", discriminant);
   
-/* } */
+  *solution1 = 0;
+  *solution2 = 0;
+
+  if (discriminant < 0)
+    return FALSE;
+
+  *solution1 = (- b + compute_sqrt(discriminant)) / (2 * a);
+  *solution1 = (- b - compute_sqrt(discriminant)) / (2 * a);
+  return TRUE;
+}
 
 int factorial(int n)
 {
