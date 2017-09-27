@@ -1,3 +1,8 @@
+/* TODO:
+   add comments to all of the methods
+   look into spacing and readability
+*/
+
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
@@ -14,12 +19,16 @@ int is_prime(int n);
 void display_primes(int n);
 void process_scores();
 double compute_tax(int income, char* status, char state);
-int quadratic(double a, double b, double c, double *solution1, double *solution2);
+int quadratic(
+  double a,
+  double b,
+  double c,
+  double *solution1,
+  double *solution2);
 int factorial(int n);
-/* void file_count(char *file, int *characters, int *lines); */
+void file_count(char *file, int *characters, int *lines);
 
-
-void prompt(char* message, char* input, void* ptr)
+void prompt(char *message, char *input, void *ptr)
 {
   printf(message);
   fflush(stdout);
@@ -28,7 +37,7 @@ void prompt(char* message, char* input, void* ptr)
 
 int main()
 {
-  const char* menu_text =
+  const char *menu_text =
     "1-Computing pi\n\
 2-Computing square root\n\
 3-Displaying primes\n\
@@ -41,14 +50,13 @@ int main()
 10-Student file\n\
 11-quit\n";
 
-  int response, income;
-  char *status, response_str[] = "";
-  char state;
+  int response, income, characters, lines;
+  char state, *status, response_str[30] = "";
   double a, b, c, solution1, solution2;
 
   while (TRUE)
   {
-    printf("%s", menu_text);
+    printf(menu_text);
     scanf("%d", &response);
 
     switch (response)
@@ -60,11 +68,14 @@ int main()
 
     case 2:
       prompt("Enter a number to square root: ", "%d", &response);
-      printf("The square root of %d is %f\n", response, compute_sqrt((double)response));
+      printf(
+	"The square root of %d is %f\n",
+	response,
+	compute_sqrt((double)response));
       break;
 
     case 3:
-      prompt("Enter the number of primes you want: ", "%d", &response);
+      prompt("How many primes would you like? ", "%d", &response);
       display_primes(response);
       break;
 
@@ -74,9 +85,8 @@ int main()
 
     case 5:
       printf("Computeing taxis.\n");
-
       prompt("Are you married? Y/N\n", "%s", response_str);
-      
+
       if (response_str[0] == 'Y' || response_str[0] == 'y')
 	status = "married";
       else
@@ -90,12 +100,12 @@ int main()
 	state = 'o';
 
       prompt("What is your income?\n", "%d", &income);
-
-      printf("Your tax amount is: %f\n", compute_tax(income, status, state));
+      printf(
+	"Your tax amount is: %f\n",
+	compute_tax(income, status, state));
       break;
 
     case 6:
-      // TODO It's not reading in the values into a, b, or c
       prompt("Enter in a value for a: ", "%lf", &a);
       prompt("Enter in a value for b: ", "%lf", &b);
       prompt("Enter in a value for c: ", "%lf", &c);
@@ -103,16 +113,22 @@ int main()
       if (quadratic(a, b, c, &solution1, &solution2))
 	printf("The solutions are %lf, %lf\n", solution1, solution2);
       else
-	printf("The quadratic of %f, %f, %f has no solution.\n", a, b, c);
+	printf("The quadratic %lf, %lf, %lf has no solution.\n", a, b, c);
       break;
 
     case 7:
-      prompt("What number would you like to find the factorial of?: ", "%d", &response);
+      prompt("What number would you to factorial? ", "%d", &response);
       printf("The factorial of %d is %d\n", response, factorial(response));
       break;
 
     case 8:
-      
+      prompt("Please enter a filename: ", "%s", &response_str);
+      file_count(response_str, &characters, &lines);
+      printf(
+	"%s has %d characters and %d lines.\n",
+	response_str,
+	characters,
+	lines);
       break;
 
     case 9:
@@ -145,7 +161,7 @@ double compute_pi(int n)
       pi -= term;
   }
 
-  return pi * 4;
+  return 4 * pi;
 }
 
 double compute_sqrt(double x)
@@ -160,7 +176,7 @@ double compute_sqrt(double x)
 
 int is_prime(int n)
 {
-  /* If the number is divisable by any number greater than 2 and less
+  /* If n is divisable by any number greater than 2 and less
    * than itself then return false */
   for (int i = 2; i < n; i++)
     if (!(n % i))
@@ -192,10 +208,9 @@ void process_scores()
 
   printf("Enter student names and scores.\n\
 E.g.\n\
-> Jane 90\n");
+> Jane 90\n\
+Enter q to quit.\n");
 
-  printf("Enter q to quit.\n");
-  
   // TODO: I think that I need to split a single string in two
   while (TRUE)
   {
@@ -229,7 +244,7 @@ E.g.\n\
   printf("The worst student %s has a grade of %d.\n", worst_student, worst_grade);
 }
 
-double compute_tax(int income, char* status, char state)
+double compute_tax(int income, char *status, char state)
 {
   double rate = -1.0;
   int tax_increase = INT_MAX;
@@ -259,14 +274,19 @@ double compute_tax(int income, char* status, char state)
     NULL;
   else
     return -1.0;
-  
+
   return rate;
 }
 
-int quadratic(double a, double b, double c, double *solution1, double *solution2)
+int quadratic(
+  double a,
+  double b,
+  double c,
+  double *solution1,
+  double *solution2)
 {
   double discriminant = (b * b) - (4 * a * c);
-  
+
   *solution1 = 0;
   *solution2 = 0;
 
@@ -275,10 +295,10 @@ int quadratic(double a, double b, double c, double *solution1, double *solution2
 
   // TODO: see why sin is not working here
   b -= b * 2;
-  
+
   *solution1 = b + compute_sqrt(discriminant) / (2 * a);
   *solution2 = b - compute_sqrt(discriminant) / (2 * a);
-  
+
   return TRUE;
 }
 
@@ -290,7 +310,28 @@ int factorial(int n)
   return n * factorial(n - 1);
 }
 
-/* void file_count(char *file, int *characters, int *lines) */
-/* { */
-  
-/* } */
+void file_count(char *file, int *characters, int *lines)
+{
+  FILE *fp;
+  char temp;
+  int character_count = 0, line_count = 0;
+
+  fp = fopen(file, "r");
+
+  temp = getc(fp);
+
+  while (temp != EOF)
+  {
+    character_count++;
+    
+    if (temp == '\n')
+      line_count++;
+
+    temp = getc(fp);
+  }
+
+  fclose(fp);
+
+  *characters = character_count;
+  *lines = line_count;
+}
