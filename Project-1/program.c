@@ -28,6 +28,7 @@ int quadratic(
 int factorial(int n);
 void file_count(char *file, int *characters, int *lines);
 void file_sort(char *infile, char *outfile);
+void file_student(char *infile);
 
 void prompt(char *message, char *input, void *ptr)
 {
@@ -60,6 +61,7 @@ int main()
     printf(menu_text);
     scanf("%d", &response);
 
+    // TODO clean this up
     switch (response)
     {
     case 1:
@@ -85,6 +87,7 @@ int main()
       break;
 
     case 5:
+      // TODO take input from strings here
       printf("Computeing taxis.\n");
       prompt("Are you married? Y/N\n", "%s", response_str);
 
@@ -101,12 +104,14 @@ int main()
 	state = 'o';
 
       prompt("What is your income?\n", "%d", &income);
+      // TODO handle the case where they dont enter the right information
       printf(
 	"Your tax amount is: %f\n",
 	compute_tax(income, status, state));
       break;
 
     case 6:
+      // TODO enter all the parameters on one line
       prompt("Enter in a value for a: ", "%lf", &a);
       prompt("Enter in a value for b: ", "%lf", &b);
       prompt("Enter in a value for c: ", "%lf", &c);
@@ -137,10 +142,11 @@ int main()
       prompt("Please enter the name of the output file: ", "%s", response2_str);
 
       file_sort(response_str, response2_str);
-            
       break;
 
     case 10:
+      prompt("Please enter a filename: ", "%s", &response_str);
+      file_student(response_str);
       break;
 
     case 11:
@@ -256,12 +262,12 @@ double compute_tax(int income, char *status, char state)
   int tax_increase = INT_MAX;
 
   // TODO see if entering the wring strings still produces an error
-  if (! strcmp(status, "MARRIED") || ! strcmp(status, "married"))
+  if (strcmp(status, "MARRIED") == 0 || strcmp(status, "married") == 0)
   {
     rate = 10.0;
     tax_increase = 50000;
   }
-  else if (! strcmp(status, "SINGLE") || ! strcmp(status, "single"))
+  else if (strcmp(status, "SINGLE") == 0 || strcmp(status, "single") == 0)
   {
     rate = 20.0;
     tax_increase = 30000;
@@ -356,6 +362,7 @@ void file_sort(char *infile, char *outfile)
 
   fscanf(fp, "%d", &number_of_students);
 
+  // TODO swap the size of and number of students
   ids = (int *)malloc(sizeof (int) * number_of_students);
   grades = (char *)malloc(sizeof (char) * number_of_students);
   gpas = (double *)malloc(sizeof (double) * number_of_students);
@@ -399,4 +406,63 @@ void file_sort(char *infile, char *outfile)
   free(ids);
   free(grades);
   free(gpas);
+}
+
+struct student {
+  char name[30];
+  int age;
+  double gpa;
+};
+
+void file_student(char *infile)
+{
+  FILE *fp;
+  int number_of_students;
+  int inc = 0, current_length = 0;
+  double avg_gpa = 0;
+  struct student *students, student;
+
+  fp = fopen(infile, "r");
+
+  fscanf(fp, "%d", &number_of_students);
+
+  students = (struct student *)malloc(number_of_students * sizeof (struct student));
+
+  // TODO also document this up
+  for (int i = 0; i < number_of_students; i++)
+  {
+    fscanf(fp, "%s%d%lf", student.name, &student.age, &student.gpa);
+
+    inc = current_length;
+
+    while (inc > 0 && strcmp(students[inc - 1].name, student.name) > 0)
+    {
+      students[inc] = students[inc - 1];
+      inc--;
+    }
+
+    students[inc] = student;
+
+    current_length++;
+  }
+  
+  // TODO print the avarage gpa of all students
+  for (int i = 0; i < number_of_students; i++)
+    avg_gpa += students[i].gpa;
+
+  printf("The avarage gpa is %lf\n", avg_gpa / number_of_students);
+
+  // TODO print the names of all the students whoes GPAs are >= 2.0
+  printf("The following students have a gpa > 2.0:\n");
+  for (int i = 0; i < number_of_students; i++)
+    if (students[i].gpa >= 2.0)
+      printf("%s\n", students[i].name);
+
+  // TODO print all the student information in acending order by names
+  printf("The following is a list of all the student information:\n");
+  for (int i = 0; i < number_of_students; i++)
+    printf("%s %d %lf\n", students[i].name, students[i].age, students[i].gpa);
+
+  free(students);
+  fclose(fp);
 }
