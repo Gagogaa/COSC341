@@ -252,7 +252,7 @@ double compute_tax(int income, char* status, char state)
     NULL;
   else
     return -1.0;
-  
+
   return rate;
 }
 
