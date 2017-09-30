@@ -18,7 +18,7 @@ double compute_sqrt(double x);
 int is_prime(int n);
 void display_primes(int n);
 void process_scores();
-double compute_tax(int income, char* status, char state);
+double compute_tax(int income, char *status, char state);
 int quadratic(
   double a,
   double b,
@@ -27,6 +27,7 @@ int quadratic(
   double *solution2);
 int factorial(int n);
 void file_count(char *file, int *characters, int *lines);
+void file_sort(char *infile, char *outfile);
 
 void prompt(char *message, char *input, void *ptr)
 {
@@ -51,7 +52,7 @@ int main()
 11-quit\n";
 
   int response, income, characters, lines;
-  char state, *status, response_str[30] = "";
+  char state, *status, response_str[30] = "", response2_str[30] = "";
   double a, b, c, solution1, solution2;
 
   while (TRUE)
@@ -132,6 +133,11 @@ int main()
       break;
 
     case 9:
+      prompt("Please enter the name of the file to be sorted: ", "%s", response_str);
+      prompt("Please enter the name of the output file: ", "%s", response2_str);
+
+      file_sort(response_str, response2_str);
+            
       break;
 
     case 10:
@@ -148,17 +154,17 @@ int main()
 /* Compute pi with 4(1 - 1/3 + 1/5 - 1/7 + 1/9...) */
 double compute_pi(int n)
 {
-  double pi = 1.0;
+  double pi = 0.0;
   double term = 0.0;
 
   for (int i = 0; i < n; i++)
   {
-    term = 1 / (3.0 + i * 2);
+    term = 1 / (1.0 + i * 2);
 
     if (i % 2)
-      pi += term;
-    else
       pi -= term;
+    else
+      pi += term;
   }
 
   return 4 * pi;
@@ -189,7 +195,7 @@ void display_primes(int n)
 {
   printf("Primes are: ");
 
-  for (int i = 1; i <= n; i++)
+  for (int i = 2; i <= n; i++)
     if (is_prime(i))
       printf("%d ", i);
 
@@ -249,6 +255,7 @@ double compute_tax(int income, char *status, char state)
   double rate = -1.0;
   int tax_increase = INT_MAX;
 
+  // TODO see if entering the wring strings still produces an error
   if (! strcmp(status, "MARRIED") || ! strcmp(status, "married"))
   {
     rate = 10.0;
@@ -334,4 +341,74 @@ void file_count(char *file, int *characters, int *lines)
 
   *characters = character_count;
   *lines = line_count;
+}
+
+void file_sort(char *infile, char *outfile)
+{
+  // input file had the following information
+  /* 
+     ID, grade, GPA
+
+     the first line containd the number of students in the file
+     each is seperated only by blanks
+     ID - positive int
+     grade - char
+     gpa - double
+
+     sort the information in acending order by ID 
+     and store it in the same formate as the the input file
+
+     use dynamic arrays
+   */
+
+  FILE *fp;
+  int id, *ids, number_of_students, current_length = 0;
+  char grade, *grades;
+  double gpa, *gpas;
+
+  fp = fopen(infile, "r");
+
+  fscanf(fp, "%d", &number_of_students);
+
+  ids = (int *)malloc(sizeof (int) * number_of_students);
+  grades = (char *)malloc(sizeof (char) * number_of_students);
+  gpas = (double *)malloc(sizeof (double) * number_of_students);
+
+  // TODO make an insertion loop!
+  // Read things into three variables
+  for (int i = 0; i < number_of_students; i++)
+  {
+    fscanf(fp, "%d %c%lf", id, grade, gpa);
+    // TODO insertion loop
+  }
+
+  // then find the spot that it need to be inserted at
+  // move all the other elements downwards
+  // insert the elements into the array
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  // Print out the arrays
+  for (int i = 0; i < number_of_students; i++)
+  {
+    printf("%d\n", ids[i]);
+    printf("%c\n", grades[i]);
+    printf("%lf\n\n", gpas[i]);
+  }
+
+  // TODO nom nom nom
+  
 }
