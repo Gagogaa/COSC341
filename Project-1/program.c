@@ -345,24 +345,10 @@ void file_count(char *file, int *characters, int *lines)
 
 void file_sort(char *infile, char *outfile)
 {
-  // input file had the following information
-  /* 
-     ID, grade, GPA
-
-     the first line containd the number of students in the file
-     each is seperated only by blanks
-     ID - positive int
-     grade - char
-     gpa - double
-
-     sort the information in acending order by ID 
-     and store it in the same formate as the the input file
-
-     use dynamic arrays
-   */
-
   FILE *fp;
-  int id, *ids, number_of_students, current_length = 0;
+  
+  // current length is the number of item in the array
+  int id, *ids, number_of_students, inc = 0, current_length = 0;
   char grade, *grades;
   double gpa, *gpas;
 
@@ -374,41 +360,43 @@ void file_sort(char *infile, char *outfile)
   grades = (char *)malloc(sizeof (char) * number_of_students);
   gpas = (double *)malloc(sizeof (double) * number_of_students);
 
-  // TODO make an insertion loop!
-  // Read things into three variables
+  // TODO comment this up
+  // Read in the students and insert them in accending order
   for (int i = 0; i < number_of_students; i++)
   {
-    fscanf(fp, "%d %c%lf", id, grade, gpa);
-    // TODO insertion loop
+    fscanf(fp, "%d %c%lf", &id, &grade, &gpa);
+
+    inc = current_length;
+    
+    // Move all the records with an ID greater than the current ID downwards
+    while (inc > 0 && ids[inc - 1] > id)
+    {
+      ids[inc] = ids[inc - 1];
+      grades[inc] = grades[inc - 1];
+      gpas[inc] = gpas[inc - 1];
+      inc--;
+    }
+    
+    ids[inc] = id;
+    grades[inc] = grade;
+    gpas[inc] = gpa;
+    
+    current_length++;
   }
 
-  // then find the spot that it need to be inserted at
-  // move all the other elements downwards
-  // insert the elements into the array
+  // Close the reading file
+  fclose(fp);
 
+  // Open the outfile for writing
+  fp = fopen(outfile, "w");
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  // Print out the arrays
+  // Write the data to the file
   for (int i = 0; i < number_of_students; i++)
-  {
-    printf("%d\n", ids[i]);
-    printf("%c\n", grades[i]);
-    printf("%lf\n\n", gpas[i]);
-  }
+    fprintf(fp, "%d %c %lf\n", ids[i], grades[i], gpas[i]);
 
-  // TODO nom nom nom
-  
+  fclose(fp);
+
+  free(ids);
+  free(grades);
+  free(gpas);
 }
