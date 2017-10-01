@@ -684,17 +684,17 @@ void file_student(char *infile)
   for (int i = 0; i < number_of_students; i++)
     avg += students[i].gpa;
 
-  printf("The avarage gpa is %lf\n", avg / number_of_students);
+  printf("\nThe avarage gpa is %.2lf\n", avg / number_of_students);
 
   /* Print the name of all the students who have a GPA >= 2.0. */
-  printf("The following students have a gpa >= 2.0:\n");
+  printf("\nThe following students have a gpa >= 2.0:\n");
   
   for (int i = 0; i < number_of_students; i++)
     if (students[i].gpa >= 2.0)
       printf("%s\n", students[i].name);
 
   /* Print all the student information in acending order by names */
-  printf("The following is a list of all the student information:\n");
+  printf("\nThe following is a list of all the student information:\n");
   
   for (int i = 0; i < number_of_students; i++)
     printf(
@@ -702,6 +702,8 @@ void file_student(char *infile)
       students[i].name,
       students[i].age,
       students[i].gpa);
+
+  printf("\n");
 
   free(students);
 }
