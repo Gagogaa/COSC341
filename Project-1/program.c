@@ -1,4 +1,9 @@
-// TODO Put info at the top.
+/* 
+   Gregory Mann 
+   Fall 2017
+   COSC 341 
+   Project 1
+*/
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
@@ -64,8 +69,8 @@ int main()
 11-quit\n";
 
   /*
-    These are the variouse inputs and outputs that the functions use
-    for menuing.
+    These are the variouse inputs and outputs that the menu uses to
+    call functions.
   */
   int response, income, characters, lines;
   char state, response_str[30] = "", response2_str[30] = "";
@@ -136,7 +141,7 @@ int main()
 //------------------------------------------------------------------------------
       
     case 6:
-      printf("\nEnter a, b, and c the quadratic function:\n\
+      printf("\nEnter a, b, and c of the quadratic function:\n\
 e.g. \n\
 > 1 3 -4\n\
 > ");
@@ -175,7 +180,7 @@ e.g. \n\
 
     case 9:
       printf("\nFile sort\n");
-      prompt("Please enter a filename: ", "%s", response_str);
+      prompt("Please enter the input file name: ", "%s", response_str);
       prompt("Please enter the output file name: ", "%s", response2_str);
       file_sort(response_str, response2_str);
       break;
@@ -214,8 +219,10 @@ double compute_pi(int n)
 
   for (int i = 0; i < n; i++)
   {
+    /* Compute value of the term. */
     term = 1 / (1.0 + i * 2);
 
+    /* Alternate between adding and subtracting the term by using i % 2 */
     if (i % 2)
       pi -= term;
     else
@@ -242,7 +249,8 @@ double compute_sqrt(double x)
 }
 
 /* 
-   Returns 1 if the input n is prime and 0 if it's not.
+   Determines if the input n is prime or not.
+   Returns 1 if the input is prime and 0 if it's not.
 
    n: The input that's being checked to see if it's a prime number.
    reutrn: The return value is 1 if the n is prime and 0 if it's not.
@@ -271,6 +279,10 @@ void display_primes(int n)
 {
   printf("Primes are: ");
 
+  /*
+    For every number between 2 and n check to see if it's prime. If
+    it is print it out.
+  */
   for (int i = 2; i <= n; i++)
     if (is_prime(i))
       printf("%d ", i);
@@ -281,16 +293,16 @@ void display_primes(int n)
 /* 
    This function asks the user to input a list of student score pairs.
    It then displays the avarage score, best score, best scoring
-   person, worst score, and the worst scoring person.
+   student, worst score, and the worst scoring student.
 */
 void process_scores()
 {
-  char name[30], best_student[30], worst_student[30];
+  char line[50], *name, *str_score, best_student[30], worst_student[30];
   int
     avg = 0,
-    grade = 0,
-    best_grade = INT_MIN,
-    worst_grade = INT_MAX,
+    score = 0,
+    best_score = INT_MIN,
+    worst_score = INT_MAX,
     number_of_students = 0;
 
   printf("Enter student names and scores.\n\
@@ -298,37 +310,82 @@ E.g.\n\
 > Jane 90\n\
 Enter q to quit.\n");
 
+  /* 
+     Clear the input buffer.
+
+     NOTE: fflush does not clear stdin.
+  */
+  fgets(line, 50, stdin);
+  
   while (TRUE)
   {
-    // TODO Split the string on the space instead of using the two scanf method.
-    prompt("> ", "%s", name);
+    printf("> ");
 
-    /* Stop iterating if the user enters q or Q */
-    if (strcmp(name, "q") == 0 || strcmp(name, "Q") == 0)
-      break;
+    /* Read in the line. */
+    fgets(line, 50, stdin);
 
-    scanf("%d", &grade);
+    /* Find the space seperating the name and score. */
+    str_score = strchr(line, ' ');
 
-    if (grade > best_grade)
+    /* 
+       If the line contains no space and the input is "q" or "Q" then
+       break the loop.
+
+       This will segfault if the only thing on the line is a name that
+       does not start with q. However I think that you want us to
+       "split" the string to demonstrate string mutability instead of
+       using two consecutive scanf calls.
+    */
+    if (str_score == NULL)
+      if (strncmp(line, "Q", 1) == 0 || strncmp(line, "q", 1) == 0)
+	break;
+
+    /* The name should be the first thing on the line. */
+    name = line;
+
+    /* 
+       Replace the space with NULL because it will be end of the name
+       and the start of the score.
+    */
+    *str_score = '\0';
+    
+    /* 
+       Now increment the pointer so it's past NULL terminator so it's
+       now pointing to the score.
+    */
+    str_score++;
+
+    /* Parse the string for the score. */
+    sscanf(str_score, "%d", &score);
+    
+    /* 
+       If the current score is the best one set the best name and the
+       best score.
+    */
+    if (score > best_score)
     {
       strcpy(best_student, name);
-      best_grade = grade;
+      best_score = score;
     }
 
-    if (grade < worst_grade)
+    /* 
+       If the current score is the worst one set the worst name and
+       the worst score.
+    */
+    if (score < worst_score)
     {
       strcpy(worst_student, name);
-      worst_grade = grade;
+      worst_score = score;
     }
 
-    avg += grade;
+    avg += score;
 
     number_of_students++;
   }
 
-  printf("\nThe avarage grade is: %f\n", (float)avg / number_of_students);
-  printf("%s has the best grade, %d.\n", best_student, best_grade);
-  printf("%s has the worst grade, %d.\n", worst_student, worst_grade);
+  printf("\nThe avarage score is: %f\n", (float)avg / number_of_students);
+  printf("%s has the best score, %d.\n", best_student, best_score);
+  printf("%s has the worst score, %d.\n", worst_student, worst_score);
 }
 
 /* 
@@ -339,12 +396,15 @@ Enter q to quit.\n");
    *status: Marital status "married" or "single".
    state: State residency 'i' for in state or 'o' for out of state.
 */
-// TODO See if I can clean this up some.
 double compute_tax(int income, char *status, char state)
 {
   double rate = -1.0;
   int tax_increase = INT_MAX;
 
+  /* 
+     Set the initial tax amount and set the value for the next tax
+     bracket based on marital status.
+  */
   if (strcmp(status, "MARRIED") == 0 || strcmp(status, "married") == 0)
   {
     rate = 10.0;
@@ -358,11 +418,18 @@ double compute_tax(int income, char *status, char state)
   else
     return -1.0;
 
+  /* 
+     Increase the tax amount if your income is enough to put you in
+     the next tax bracket.
+  */
   if (income > tax_increase)
     rate += 5.0;
   else if (income < 0)
     return -1.0;
-
+  
+  /* 
+     Reduce the tax amount if your out of state.
+  */
   if (state == 'O' || state == 'o')
     rate -= 3.0;
   else if (state == 'I' || state == 'i')
@@ -380,7 +447,7 @@ double compute_tax(int income, char *status, char state)
    solution2. 
    
    a, b, c: The coefficients of your quadratic equation.
-   *solution1, solution2: If the quadratic has real solutions these 
+   solution1, solution2: If the quadratic has real solutions these 
    will contain them if their is no solution they will both
    contain 0.0.
    result: It's 1 if their are real solutions and 0 otherwise.
@@ -397,6 +464,7 @@ int quadratic(
   *solution1 = 0.0;
   *solution2 = 0.0;
 
+  /* If the discriminant is < 0 then there are no solutions. */
   if (discriminant < 0)
     return FALSE;
 
@@ -426,13 +494,12 @@ int factorial(int n)
 /* 
    Counts the number of character and lines in a file.
 
-   *file: The input file to be counted.
-   *characters: A pointer to the variable that will contain the number of 
+   file: The input file to be counted.
+   characters: A pointer to the variable that will contain the number of 
    characters in the file.
-   *lines: A pointer to the variable that will contain the number of lines
+   lines: A pointer to the variable that will contain the number of lines
    in the file.
 */
-// TODO make commments here?
 void file_count(char *file, int *characters, int *lines)
 {
   FILE *fp;
@@ -443,12 +510,17 @@ void file_count(char *file, int *characters, int *lines)
 
   fp = fopen(file, "r");
 
+  /*
+    Get the first character of the file to make sure that the initial
+    value of temp is not EOF.
+  */
   temp = getc(fp);
 
   while (temp != EOF)
   {
     (*characters)++;
-    
+
+    /* Just count the number of newlines to get the line count. */
     if (temp == '\n')
       (*lines)++;
 
@@ -458,26 +530,30 @@ void file_count(char *file, int *characters, int *lines)
   fclose(fp);  
 }
 
-/* 
-   Reads in a file with the following format: 
-   An entry count at the top.
-   Lines that each have an ID GRADE GPA.
-   e.g.
-   2
-   54321 A 4.0
-   12345 C 3.0
+/*
+  Reads in a file with the following format: 
+  An entry count at the top.
+  Lines that each have an ID GRADE GPA.
+  e.g.
+  2
+  54321 A 4.0
+  12345 C 3.0
 
-   The function then sorts the file by ID and stores it in the output
-   file in a similar format (without the entry count at the top).
+  The function then sorts the file by ID and stores it in the output
+  file in a similar format (without the entry count at the top).
 
-   *infile: The input file (format described above).
-   *outfile: The file the output goes to (format described above).
+  infile: The input file (format described above).
+  outfile: The file the output goes to (format described above).
 */
 void file_sort(char *infile, char *outfile)
 {
   FILE *fp;
-  
-  int current_id, *ids, number_of_students, inc = 0, number_of_records = 0;
+  int
+    current_id,
+    *ids,
+    inc = 0,
+    number_of_students,
+    number_of_records = 0;
   char current_grade, *grades;
   double current_gpa, *gpas;
 
@@ -486,12 +562,12 @@ void file_sort(char *infile, char *outfile)
   /* Read in the number of students. */
   fscanf(fp, "%d", &number_of_students);
 
-  /* Allocate the arrays. */
+  /* Allocate memory for the arrays. */
   ids = (int *)malloc(number_of_students * sizeof (int));
   grades = (char *)malloc(number_of_students * sizeof (char));
   gpas = (double *)malloc(number_of_students * sizeof (double));
 
-  /* Read in the students and insert them in accending order. */
+  /* Read in the students inserting them in accending order. */
   for (int i = 0; i < number_of_students; i++)
   {
     fscanf(fp, "%d %c%lf", &current_id, &current_grade, &current_gpa);
@@ -500,7 +576,7 @@ void file_sort(char *infile, char *outfile)
     /* 
        Move all the "records" with an ID greater than the current ID
        downwards. When this loop ends the value of inc is the position
-       where the current "record" should be inserted.
+       where the current "record" will be inserted.
     */
     while (inc > 0 && ids[inc - 1] > current_id)
     {
@@ -540,8 +616,8 @@ void file_sort(char *infile, char *outfile)
   free(gpas);
 }
 
-/* 
-   A structure representing a student.
+/*
+  A structure representing a student.
 */
 struct student
 {
@@ -550,19 +626,19 @@ struct student
   double gpa;
 };
 
-/* 
-   Reads in a file with the following format: 
-   An entry count at the top.
-   Lines that each have an NAME AGE GPA.
-   e.g.
-   2
-   Jane 18 4.0
-   John 20 3.8
+/*
+  Reads in a file with the following format: 
+  An entry count at the top.
+  Lines that each have an NAME AGE GPA.
+  e.g.
+  2
+  Jane 18 4.0
+  John 20 3.8
 
-   This function prints out the avarage gpa, the students who have a
-   GPA >= 2.0, then all the student information.
+  This function prints out the avarage gpa, the students who have a
+  GPA >= 2.0, then all the student information.
 
-   *infile: The input file (format described above).
+  infile: The input file (format described above).
 */
 void file_student(char *infile)
 {
@@ -579,7 +655,7 @@ void file_student(char *infile)
   students =
     (struct student *)malloc(number_of_students * sizeof (struct student));
 
-  /* Read in the students and insert them in accending order. */  
+  /* Read in the students inserting them in accending order. */
   for (int i = 0; i < number_of_students; i++)
   {
     fscanf(fp, "%s%d%lf", student.name, &student.age, &student.gpa);
@@ -589,7 +665,7 @@ void file_student(char *infile)
     /* 
        Move all the records with an ID greater than the current ID
        downwards. When this loop ends the value of inc is the position
-       where the current record should be inserted.
+       where the current record will be inserted.
     */
     while (inc > 0 && strcmp(students[inc - 1].name, student.name) > 0)
     {
@@ -610,14 +686,14 @@ void file_student(char *infile)
 
   printf("The avarage gpa is %lf\n", avg / number_of_students);
 
-  /* Print the name of all the students who have a GPA > 2.0. */
-  printf("The following students have a gpa > 2.0:\n");
+  /* Print the name of all the students who have a GPA >= 2.0. */
+  printf("The following students have a gpa >= 2.0:\n");
   
   for (int i = 0; i < number_of_students; i++)
     if (students[i].gpa >= 2.0)
       printf("%s\n", students[i].name);
 
-   /* Print all the student information in acending order by names */
+  /* Print all the student information in acending order by names */
   printf("The following is a list of all the student information:\n");
   
   for (int i = 0; i < number_of_students; i++)
