@@ -38,9 +38,9 @@ void file_student(char *infile);
    often. It prints out the message string then reads in the type
    specified by the input and stores it in ptr.
 
-   *message: The message to be printed to the screen.
-   *input: A format string that dectates what type is read into ptr.
-   *ptr: A reference to the variable that that will accept the value 
+   message: The message to be printed to the screen.
+   input: A format string that dectates what type is read into ptr.
+   ptr: A reference to the variable that that will accept the value 
    read by the format string.
 */
 void prompt(char *message, char *input, void *ptr)
