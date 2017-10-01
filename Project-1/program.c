@@ -393,7 +393,7 @@ Enter q to quit.\n");
    percentage that your going to be taxed.
 
    income: The amount that you make in a year.
-   *status: Marital status "married" or "single".
+   status: Marital status "married" or "single".
    state: State residency 'i' for in state or 'o' for out of state.
 */
 double compute_tax(int income, char *status, char state)
