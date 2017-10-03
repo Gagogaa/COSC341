@@ -8,12 +8,13 @@
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
-#include <limits.h>
 
 /* A few macros for readabillity. */
 #define TRUE  1
 #define FALSE 0
 #define NOP NULL
+#define INT_MAX 32767
+#define INT_MIN -32767
 
 /* See the implementations for more info. */
 double compute_pi(int n);
@@ -351,7 +352,7 @@ Enter q to quit.\n");
     
     /* 
        Now increment the pointer so it's past NULL terminator so it's
-       now pointing to the score.
+       now pointing at the score.
     */
     str_score++;
 
@@ -527,11 +528,14 @@ void file_count(char *file, int *characters, int *lines)
     temp = getc(fp);
   }
 
+  /* Add 1 for the EOF character. */
+  (*lines)++; 
+
   fclose(fp);  
 }
 
 /*
-  Reads in a file with the following format: 
+  Reads in a file with the following format: 4-processing grades\n\
   An entry count at the top.
   Lines that each have an ID GRADE GPA.
   e.g.
@@ -693,7 +697,7 @@ void file_student(char *infile)
     if (students[i].gpa >= 2.0)
       printf("%s\n", students[i].name);
 
-  /* Print all the student information in acending order by names */
+  /* Print all the student information in acending order by names. */
   printf("\nThe following is a list of all the student information:\n");
   
   for (int i = 0; i < number_of_students; i++)
