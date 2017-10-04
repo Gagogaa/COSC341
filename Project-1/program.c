@@ -136,7 +136,7 @@ int main()
       if (solution == -1)
 	printf("Invalid entry\n\n");
       else
-	printf("Your tax amount is: %.2f%%\n\n", solution);
+	printf("Your tax amount is: %.2f\n\n", solution);
       break;
 
 //------------------------------------------------------------------------------
@@ -408,12 +408,12 @@ double compute_tax(int income, char *status, char state)
   */
   if (strcmp(status, "MARRIED") == 0 || strcmp(status, "married") == 0)
   {
-    rate = 10.0;
+    rate = 0.10;
     tax_increase = 50000;
   }
   else if (strcmp(status, "SINGLE") == 0 || strcmp(status, "single") == 0)
   {
-    rate = 20.0;
+    rate = 0.20;
     tax_increase = 30000;
   }
   else
@@ -424,7 +424,7 @@ double compute_tax(int income, char *status, char state)
      the next tax bracket.
   */
   if (income > tax_increase)
-    rate += 5.0;
+    rate += 0.05;
   else if (income < 0)
     return -1.0;
   
@@ -432,13 +432,13 @@ double compute_tax(int income, char *status, char state)
      Reduce the tax amount if your out of state.
   */
   if (state == 'O' || state == 'o')
-    rate -= 3.0;
+    rate -= 0.03;
   else if (state == 'I' || state == 'i')
     NOP; /* NO OPERATION */
   else
     return -1.0;
 
-  return rate;
+  return income * rate;
 }
 
 /* 
