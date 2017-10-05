@@ -98,18 +98,18 @@ int main()
     case 2:
       prompt("\nEnter a number to square root: ", "%d", &response);
       printf(
-	"The square root of %d is %f\n\n",
-	response,
-	compute_sqrt((double)response));
+        "The square root of %d is %f\n\n",
+        response,
+        compute_sqrt((double)response));
       break;
 
 //------------------------------------------------------------------------------
 
     case 3:
       prompt(
-	"\nWhat number would you like to find primes up to? ",
-	"%d",
-	&response);
+        "\nWhat number would you like to find primes up to? ",
+        "%d",
+        &response);
       display_primes(response);
       printf("\n");
       break;
@@ -135,9 +135,9 @@ int main()
       solution = compute_tax(income, response_str, state);
 
       if (solution == -1)
-	printf("Invalid entry\n\n");
+        printf("Invalid entry\n\n");
       else
-	printf("Your tax amount is: %.2f\n\n", solution);
+        printf("Your tax amount is: %.2f\n\n", solution);
       break;
 
 //------------------------------------------------------------------------------
@@ -153,9 +153,9 @@ e.g. \n\
       scanf("%lf%lf%lf", &a, &b, &c);
 
       if (quadratic(a, b, c, &solution1, &solution2))
-	printf("The solutions are %lf, %lf\n\n", solution1, solution2);
+        printf("The solutions are %lf, %lf\n\n", solution1, solution2);
       else
-	printf("The quadratic %lf, %lf, %lf has no solution.\n\n", a, b, c);
+        printf("The quadratic %lf, %lf, %lf has no solution.\n\n", a, b, c);
       break;
 
 //------------------------------------------------------------------------------
@@ -172,10 +172,10 @@ e.g. \n\
       prompt("Please enter a filename: ", "%s", &response_str);
       file_count(response_str, &characters, &lines);
       printf(
-	"%s has %d characters and %d lines.\n\n",
-	response_str,
-	characters,
-	lines);
+        "%s has %d characters and %d lines.\n\n",
+        response_str,
+        characters,
+        lines);
       break;
 
 //------------------------------------------------------------------------------
@@ -340,7 +340,7 @@ Enter q to quit.\n");
     */
     if (str_score == NULL)
       if (strncmp(line, "Q", 1) == 0 || strncmp(line, "q", 1) == 0)
-	break;
+        break;
 
     /* The name should be the first thing on the line. */
     name = line;
