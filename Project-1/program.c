@@ -1,7 +1,7 @@
-/* 
-   Gregory Mann 
+/*
+   Gregory Mann
    Fall 2017
-   COSC 341 
+   COSC 341
    Project 1
 */
 #include <stdio.h>
@@ -9,7 +9,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-/* A few macros for readabillity. */
+/* A few macros for readability. */
 #define TRUE  1
 #define FALSE 0
 #define NOP NULL
@@ -29,19 +29,20 @@ int quadratic(
   double c,
   double *solution1,
   double *solution2);
+
 int factorial(int n);
 void file_count(char *file, int *characters, int *lines);
 void file_sort(char *infile, char *outfile);
 void file_student(char *infile);
 
-/* 
+/*
    Prompt is a helper function. I found myself typing it's contents
    often. It prints out the message string then reads in the type
    specified by the input and stores it in ptr.
 
    message: The message to be printed to the screen.
    input: A format string that dectates what type is read into ptr.
-   ptr: A reference to the variable that that will accept the value 
+   ptr: A reference to the variable that that will accept the value
    read by the format string.
 */
 void prompt(char *message, char *input, void *ptr)
@@ -51,7 +52,7 @@ void prompt(char *message, char *input, void *ptr)
   scanf(input, ptr);
 }
 
-/* 
+/*
    The main function.
 */
 int main()
@@ -70,7 +71,7 @@ int main()
 11-quit\n";
 
   /*
-    These are the variouse inputs and outputs that the menu uses to
+    These are the various inputs and outputs that the menu uses to
     call functions.
   */
   int response, income, characters, lines;
@@ -84,16 +85,16 @@ int main()
 
     switch (response)
     {
-      
+
 //------------------------------------------------------------------------------
-      
+
     case 1:
       prompt("\nEnter N terms of pi: ", "%d", &response);
       printf("Pi is: %f\n\n", compute_pi(response));
       break;
-      
+
 //------------------------------------------------------------------------------
-      
+
     case 2:
       prompt("\nEnter a number to square root: ", "%d", &response);
       printf(
@@ -101,8 +102,8 @@ int main()
 	response,
 	compute_sqrt((double)response));
       break;
-      
-//------------------------------------------------------------------------------      
+
+//------------------------------------------------------------------------------
 
     case 3:
       prompt(
@@ -113,18 +114,18 @@ int main()
       printf("\n");
       break;
 
-//------------------------------------------------------------------------------      
-      
+//------------------------------------------------------------------------------
+
     case 4:
       printf("\n");
       process_scores();
       printf("\n");
       break;
-      
+
 //------------------------------------------------------------------------------
-      
+
     case 5:
-      printf("\nComputeing taxis.\n");
+      printf("\nComputing taxis.\n");
       prompt("Enter you status:(married, single)\n", "%s", response_str);
 
       prompt("\nWhat is your residency status: (i, o)\n", " %c", &state);
@@ -140,7 +141,7 @@ int main()
       break;
 
 //------------------------------------------------------------------------------
-      
+
     case 6:
       printf("\nEnter a, b, and c of the quadratic function:\n\
 e.g. \n\
@@ -150,7 +151,7 @@ e.g. \n\
       fflush(stdout);
 
       scanf("%lf%lf%lf", &a, &b, &c);
-      
+
       if (quadratic(a, b, c, &solution1, &solution2))
 	printf("The solutions are %lf, %lf\n\n", solution1, solution2);
       else
@@ -158,13 +159,13 @@ e.g. \n\
       break;
 
 //------------------------------------------------------------------------------
-      
+
     case 7:
       prompt("\nWhat number would you to factorial? ", "%d", &response);
       printf("The factorial of %d is %d\n\n", response, factorial(response));
       break;
 
-//------------------------------------------------------------------------------      
+//------------------------------------------------------------------------------
 
     case 8:
       printf("\nFile count\n");
@@ -177,7 +178,7 @@ e.g. \n\
 	lines);
       break;
 
-//------------------------------------------------------------------------------      
+//------------------------------------------------------------------------------
 
     case 9:
       printf("\nFile sort\n");
@@ -186,7 +187,7 @@ e.g. \n\
       file_sort(response_str, response2_str);
       break;
 
-//------------------------------------------------------------------------------      
+//------------------------------------------------------------------------------
 
     case 10:
       printf("\nStudent File\n");
@@ -194,24 +195,24 @@ e.g. \n\
       file_student(response_str);
       break;
 
-//------------------------------------------------------------------------------      
+//------------------------------------------------------------------------------
 
     case 11:
       /* Exits the program */
       return 0;
       break;
 
-//------------------------------------------------------------------------------      
+//------------------------------------------------------------------------------
     }
   }
 }
 
-/* 
+/*
    Computes pi with the formula 4(1 - 1/3 + 1/5 - 1/7 + 1/9...) up to
    the nth term.
 
    n: Number of terms to compute up to when calculating pi.
-   return: Aproximation of pi.
+   return: Approximation of pi.
 */
 double compute_pi(int n)
 {
@@ -233,9 +234,9 @@ double compute_pi(int n)
   return 4 * pi;
 }
 
-/* 
+/*
    Computes the square root of the input x.
-   
+
    x: The number that will be square rooted.
    return: The square root of x.
 */
@@ -249,18 +250,18 @@ double compute_sqrt(double x)
   return guess;
 }
 
-/* 
+/*
    Determines if the input n is prime or not.
    Returns 1 if the input is prime and 0 if it's not.
 
    n: The input that's being checked to see if it's a prime number.
-   reutrn: The return value is 1 if the n is prime and 0 if it's not.
+   return: The return value is 1 if the n is prime and 0 if it's not.
 */
 int is_prime(int n)
 {
-  /* 
+  /*
      If n is divisible by any number greater than 2 and less than
-     itself then return false. 
+     itself then return false.
 
      Yes I know this is really really slow.
   */
@@ -271,7 +272,7 @@ int is_prime(int n)
   return TRUE;
 }
 
-/* 
+/*
    Displays all the prime numbers up to and including n.
 
    n: The max prime number that you would like to display.
@@ -291,9 +292,9 @@ void display_primes(int n)
   printf("\n");
 }
 
-/* 
+/*
    This function asks the user to input a list of student score pairs.
-   It then displays the avarage score, best score, best scoring
+   It then displays the average score, best score, best scoring
    student, worst score, and the worst scoring student.
 */
 void process_scores()
@@ -311,13 +312,13 @@ E.g.\n\
 > Jane 90\n\
 Enter q to quit.\n");
 
-  /* 
+  /*
      Clear the input buffer.
 
      NOTE: fflush does not clear stdin.
   */
   fgets(line, 50, stdin);
-  
+
   while (TRUE)
   {
     printf("> ");
@@ -325,10 +326,10 @@ Enter q to quit.\n");
     /* Read in the line. */
     fgets(line, 50, stdin);
 
-    /* Find the space seperating the name and score. */
+    /* Find the space separating the name and score. */
     str_score = strchr(line, ' ');
 
-    /* 
+    /*
        If the line contains no space and the input is "q" or "Q" then
        break the loop.
 
@@ -344,13 +345,13 @@ Enter q to quit.\n");
     /* The name should be the first thing on the line. */
     name = line;
 
-    /* 
+    /*
        Replace the space with NULL because it will be end of the name
        and the start of the score.
     */
     *str_score = '\0';
-    
-    /* 
+
+    /*
        Now increment the pointer so it's past NULL terminator so it's
        now pointing at the score.
     */
@@ -358,8 +359,8 @@ Enter q to quit.\n");
 
     /* Parse the string for the score. */
     sscanf(str_score, "%d", &score);
-    
-    /* 
+
+    /*
        If the current score is the best one set the best name and the
        best score.
     */
@@ -369,7 +370,7 @@ Enter q to quit.\n");
       best_score = score;
     }
 
-    /* 
+    /*
        If the current score is the worst one set the worst name and
        the worst score.
     */
@@ -389,7 +390,7 @@ Enter q to quit.\n");
   printf("%s has the worst score, %d.\n", worst_student, worst_score);
 }
 
-/* 
+/*
    This function computes some imaginary tax rules and returns the
    percentage that your going to be taxed.
 
@@ -402,7 +403,7 @@ double compute_tax(int income, char *status, char state)
   double rate = -1.0;
   int tax_increase = INT_MAX;
 
-  /* 
+  /*
      Set the initial tax amount and set the value for the next tax
      bracket based on marital status.
   */
@@ -419,7 +420,7 @@ double compute_tax(int income, char *status, char state)
   else
     return -1.0;
 
-  /* 
+  /*
      Increase the tax amount if your income is enough to put you in
      the next tax bracket.
   */
@@ -427,8 +428,8 @@ double compute_tax(int income, char *status, char state)
     rate += 0.05;
   else if (income < 0)
     return -1.0;
-  
-  /* 
+
+  /*
      Reduce the tax amount if your out of state.
   */
   if (state == 'O' || state == 'o')
@@ -441,14 +442,14 @@ double compute_tax(int income, char *status, char state)
   return income * rate;
 }
 
-/* 
+/*
    Solves a quadratic problem using the quadratic formula. It returns
    0 if their are no solutions, and 1 if their are solutions. If their
    are solutions they are stored in the pointers solution1 and
-   solution2. 
-   
+   solution2.
+
    a, b, c: The coefficients of your quadratic equation.
-   solution1, solution2: If the quadratic has real solutions these 
+   solution1, solution2: If the quadratic has real solutions these
    will contain them if their is no solution they will both
    contain 0.0.
    result: It's 1 if their are real solutions and 0 otherwise.
@@ -478,7 +479,7 @@ int quadratic(
   return TRUE;
 }
 
-/* 
+/*
    Returns the factorial of the number n.
 
    n: The number to be (!) e.g. n!
@@ -488,15 +489,15 @@ int factorial(int n)
 {
   if (n == 1)
     return 1;
-  
+
   return n * factorial(n - 1);
 }
 
-/* 
+/*
    Counts the number of character and lines in a file.
 
    file: The input file to be counted.
-   characters: A pointer to the variable that will contain the number of 
+   characters: A pointer to the variable that will contain the number of
    characters in the file.
    lines: A pointer to the variable that will contain the number of lines
    in the file.
@@ -505,7 +506,7 @@ void file_count(char *file, int *characters, int *lines)
 {
   FILE *fp;
   char temp;
-  
+
   *characters = 0;
   *lines = 0;
 
@@ -529,9 +530,9 @@ void file_count(char *file, int *characters, int *lines)
   }
 
   /* Add 1 for the EOF character. */
-  (*lines)++; 
+  (*lines)++;
 
-  fclose(fp);  
+  fclose(fp);
 }
 
 /*
@@ -576,8 +577,8 @@ void file_sort(char *infile, char *outfile)
   {
     fscanf(fp, "%d %c%lf", &current_id, &current_grade, &current_gpa);
     inc = number_of_records;
-    
-    /* 
+
+    /*
        Move all the "records" with an ID greater than the current ID
        downwards. When this loop ends the value of inc is the position
        where the current "record" will be inserted.
@@ -594,7 +595,7 @@ void file_sort(char *infile, char *outfile)
     ids[inc] = current_id;
     grades[inc] = current_grade;
     gpas[inc] = current_gpa;
-    
+
     number_of_records++;
   }
 
@@ -602,9 +603,9 @@ void file_sort(char *infile, char *outfile)
 
   fp = fopen(outfile, "w");
 
-  /* 
+  /*
      Write all the data to the outfile with the following format in
-     acending order by ID: 	
+     ascending order by ID:
      ID GRADE GPA
      ID GRADE GPA
      ID GRADE GPA
@@ -631,7 +632,7 @@ struct student
 };
 
 /*
-  Reads in a file with the following format: 
+  Reads in a file with the following format:
   An entry count at the top.
   Lines that each have an NAME AGE GPA.
   e.g.
@@ -639,7 +640,7 @@ struct student
   Jane 18 4.0
   John 20 3.8
 
-  This function prints out the avarage gpa, the students who have a
+  This function prints out the average gpa, the students who have a
   GPA >= 2.0, then all the student information.
 
   infile: The input file (format described above).
@@ -653,20 +654,20 @@ void file_student(char *infile)
 
   fp = fopen(infile, "r");
 
-  /* Read in the number of students. */  
+  /* Read in the number of students. */
   fscanf(fp, "%d", &number_of_students);
 
   students =
     (struct student *)malloc(number_of_students * sizeof (struct student));
 
-  /* Read in the students inserting them in accending order. */
+  /* Read in the students inserting them in ascending order. */
   for (int i = 0; i < number_of_students; i++)
   {
     fscanf(fp, "%s%d%lf", student.name, &student.age, &student.gpa);
 
     inc = number_of_records;
 
-    /* 
+    /*
        Move all the records with an ID greater than the current ID
        downwards. When this loop ends the value of inc is the position
        where the current record will be inserted.
@@ -681,25 +682,25 @@ void file_student(char *infile)
 
     number_of_records++;
   }
-  
+
   fclose(fp);
-  
+
   /* Print the average of the students GPAs. */
   for (int i = 0; i < number_of_students; i++)
     avg += students[i].gpa;
 
-  printf("\nThe avarage gpa is %.2lf\n", avg / number_of_students);
+  printf("\nThe average gpa is %.2lf\n", avg / number_of_students);
 
   /* Print the name of all the students who have a GPA >= 2.0. */
   printf("\nThe following students have a gpa >= 2.0:\n");
-  
+
   for (int i = 0; i < number_of_students; i++)
     if (students[i].gpa >= 2.0)
       printf("%s\n", students[i].name);
 
-  /* Print all the student information in acending order by names. */
+  /* Print all the student information in ascending order by names. */
   printf("\nThe following is a list of all the student information:\n");
-  
+
   for (int i = 0; i < number_of_students; i++)
     printf(
       "%s %d %lf\n",
