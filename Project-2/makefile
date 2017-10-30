@@ -6,7 +6,7 @@ all:
 	$(CC) $(CFLAGS) -o $(TARGET) $(TARGET).c
 
 clean:
-	$(RM) $(TARGET)
+	$(RM) $(TARGET) test.out
 
 run: all
 	./$(TARGET)

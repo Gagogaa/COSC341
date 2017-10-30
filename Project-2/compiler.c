@@ -64,6 +64,12 @@ typedef struct
   bool error;
 } CONTEXT;
 
+token check_reserved(CONTEXT *cont);
+void clear_buffer(CONTEXT *cont);
+void buffer_char(CONTEXT *cont, char character);
+token scanner(CONTEXT *cont);
+void scan_file(CONTEXT *cont);
+
 /*
   TODO: maybe write a toLower / toUpper function for strings so I can do
   the macro thing with keywords too.
@@ -88,8 +94,7 @@ void clear_buffer(CONTEXT *cont)
 
 void buffer_char(CONTEXT *cont, char character)
 {
-  char *ptr;
-  ptr = strchr(cont->token_buffer, '\0');
+  char *ptr = strchr(cont->token_buffer, '\0');
   *ptr = character;
   *(ptr+1) = '\0';
 }
@@ -108,7 +113,6 @@ token scanner(CONTEXT *cont)
 
   char character;
 
-  // TODO does this really need to be in a while loop?
   while (TRUE)
   {
     character = getc(cont->fp);
@@ -248,35 +252,54 @@ token scanner(CONTEXT *cont)
   return SCANOFF;
 }
 
-/* TODO create the menu for this application. */
-int main()
+void scan_file(CONTEXT *cont)
 {
-  CONTEXT cont;
-  cont.line_number = 1;
+  /* TODO: scan and print to a file. */
+  char in_file[100], out_file[100];
 
-  /* char in_file[100], out_file[100]; */
+  printf("Please enter a file to scan:\n");
+  scanf("%s", in_file);
+  printf("Please enter an output file:\n");
+  scanf("%s", out_file);
 
-  /* printf("Please enter a file name to parse:\n"); */
-  /* scanf("%s", in_file); */
-  /* printf("Please enter an output file:\n"); */
-  /* scanf("%s", out_file); */
+  cont->fp = fopen(in_file, "r");
 
-  cont.fp = fopen("test-files/test.xmicro", "r");
-
-  FILE *fout;
-  fout = fopen("test.out", "w");
+  FILE *fout = fopen("test.out", "w");
 
   token tok;
 
   do
   {
-    tok = scanner(&cont);
+    tok = scanner(cont);
 
     fprintf(fout, "%s ", TokenStrings[(int)tok]);
   }
   while (tok != SCANOFF);
 
-  printf("DONE\n");
+  fclose(cont->fp);
+}
+
+/* TODO create the menu for this application. */
+int main()
+{
+  CONTEXT cont;
+  cont.line_number = 1;
+  cont.error = FALSE;
+
+  printf("Select: \n\
+1: Scan a file for tokens.\n\
+2: Parse a file.\n");
+
+  int user_input = 0;
+
+  scanf("%d", &user_input);
+
+  switch (user_input)
+  {
+  case 1: scan_file(&cont); break;
+  case 2: /* TODO: Parse a file for errors. */ break;
+  default: printf("Invalid option %d", user_input); break;
+  }
 
   return 0;
 }
