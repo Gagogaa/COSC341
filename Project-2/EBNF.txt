@@ -19,8 +19,9 @@
 <operand> -> (<identifier> | <integer literal>)
 <integer literal> -> {<digit>}+
 
-// TODO copy from the notes
-<expr> ->
+<expr> -> <term> {(+|-) <term>}
+<term> -> <factor> {(*|/) <factor>}
+<factor> -> <integer literal> | <identifier> | <lp><expr><rp>
 
 <lb> -> {
 <rb> -> }
