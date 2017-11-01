@@ -1,3 +1,10 @@
+/*
+   Gregory Mann
+   Fall 2017
+   COSC 341
+   Project 2
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,54 +15,27 @@ typedef int bool;
 #define TRUE 1
 #define FALSE 0
 
-/* List of Tokens:
-   MAIN, WHILE, READ, WRITE, IF, ELSE, IDENTIFIER, LEFT_BRACKET,
-   RIGHT_BRACKET, LEFT_PAREN, RIGHT_PAREN, INT_LITERAL,
-   SEMICOLON, SCANOFF, MINUS_OP, PLUS_OP, MULT_OP, DIV_OP, GT_OP, LT_OP,
-   EQU_OP, GTEQU_OP, LTEQU_OP, ASSIGN_OP */
-
-/* I found this macro idea here: http://www.drdobbs.com/cpp/the-x-macro/228700289 */
-
-/* TODO: explain the macros in depth. */
-/* Create the list of tokens. Apply is a macro thats applied to each of the tokens. */
-#define TOKENS\
-  apply(MAIN)\
-  apply(WHILE)\
-  apply(READ)\
-  apply(WRITE)\
-  apply(IF)\
-  apply(ELSE)\
-  apply(IDENTIFIER)\
-  apply(LEFT_BRACKET)\
-  apply(RIGHT_BRACKET)\
-  apply(LEFT_PAREN)\
-  apply(RIGHT_PAREN)\
-  apply(INT_LITERAL)\
-  apply(SEMICOLON)\
-  apply(SCANOFF)\
-  apply(MINUS_OP)\
-  apply(PLUS_OP)\
-  apply(MULT_OP)\
-  apply(DIV_OP)\
-  apply(GT_OP)\
-  apply(LT_OP)\
-  apply(EQU_OP)\
-  apply(GTEQU_OP)\
-  apply(LTEQU_OP)\
-  apply(NOTEQU_OP)\
-  apply(ASSIGN_OP)\
-  apply(COMMA)
-
 /* Create the enum of Tokens. */
-#define apply(a) a,
-typedef enum { TOKENS } token;
-#undef apply
+typedef enum {
+  MAIN, WHILE, READ, WRITE, IF, ELSE, IDENTIFIER, LEFT_BRACKET,
+  RIGHT_BRACKET, LEFT_PAREN, RIGHT_PAREN, INT_LITERAL, SEMICOLON,
+  SCANOFF, MINUS_OP, PLUS_OP, MULT_OP, DIV_OP, GT_OP, LT_OP, EQU_OP,
+  GTEQU_OP, LTEQU_OP, NOTEQU_OP, ASSIGN_OP, COMMA
+} token;
 
 /* Create an array of strings matching the tokens for pretty printing. */
-#define apply(a) #a,
-static String TokenStrings[] = { TOKENS };
-#undef apply
+static String TokenStrings[] = {
+  "MAIN", "WHILE", "READ", "WRITE", "IF", "ELSE", "IDENTIFIER",
+  "LEFT_BRACKET", "RIGHT_BRACKET", "LEFT_PAREN", "RIGHT_PAREN",
+  "INT_LITERAL", "SEMICOLON", "SCANOFF", "MINUS_OP", "PLUS_OP",
+  "MULT_OP", "DIV_OP", "GT_OP", "LT_OP", "EQU_OP", "GTEQU_OP",
+  "LTEQU_OP", "NOTEQU_OP", "ASSIGN_OP", "COMMA"
+};
 
+/*
+  A struct containing the "context" of the program because I didn't
+  want to use global variables.
+*/
 typedef struct
 {
   FILE *fp;
@@ -97,6 +77,7 @@ void syntax_error(token expected, CONTEXT *cont);
 
 int main()
 {
+  /* Setup the context. */
   CONTEXT cont;
   cont.line_number = 1;
   cont.error = FALSE;
@@ -165,26 +146,11 @@ void parse_file(CONTEXT *cont)
 
   fclose(cont->fp);
 
-  if(!cont->error)
+  if (!cont->error)
     printf("Parsing successful!\n");
 }
 
-/*
-  bool CheckToUpperCase(String str)
-  {
-  while (*str != NULL)
-  if (isUpper(*str))
-  return FALSE;
-  else
-  *str = toupper(*str);
-  return TRUE;
-  }
-*/
-
-/*
-  TODO: maybe write a toLower / toUpper function for strings so I can do
-  the macro thing with keywords too.
-*/
+/* Checks if the word just read in is an identifier or a keyword. */
 token check_reserved(CONTEXT *cont)
 {
   /* Check for one of the keywords. */
@@ -263,6 +229,7 @@ token scanner(CONTEXT *cont)
       return INT_LITERAL;
     }
 
+    /*  */
     switch (character)
     {
       /* Check for the end of file. */
