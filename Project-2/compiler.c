@@ -533,7 +533,7 @@ void syntax_error(token expected)
   printf(
     "Syntax error on line %d GOT: %s EXPECTED: %s\n",
     line_number,
-    TokenStrings[next_tok],
+    TokenStrings[(int)next_tok],
     TokenStrings[(int)expected]);
 
   /* "Eat" the token. In some cases this can prevent a cascade of errors. */
