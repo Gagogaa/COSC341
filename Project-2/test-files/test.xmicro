@@ -2,12 +2,10 @@
 // A Comment with bad symbols !@#$
 main {
   // Test of read and write
-
-  //read(Alpha, Beta, Gamma);
-  //write(A1, B1, C1);
+  read(Alpha, Beta, Gamma);
+  write(A1, B1, C1);
 
   // Single if statment without an else
-  // TODO the relatinal operators other than != throw the errors...
   if (1 == 7) {
     A := 8;
   }
@@ -21,7 +19,7 @@ main {
       // Nested while (Mostly just to test out the while)
       while (B <= 12) {
         // Assignment with expression
-        Beta := 7 * (5 - 4);
+        Beta := (7 + 3) * (5 - (4 * 8));
       }
     }
   }

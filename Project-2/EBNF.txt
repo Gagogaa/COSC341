@@ -1,7 +1,7 @@
 <program>               -> main <lb> <stmt-list> <rb>
 <stmt-list>             -> {<stmt>}+
-<stmt>                  -> (<read-stmt> | <write-stmt> | <if-stmt>
-                            | <while-stmt> | <assignment-stmt>)
+<stmt>                  -> ( <read-stmt>  | <write-stmt> | <if-stmt>
+                           | <while-stmt> | <assignment-stmt>)
 
 <read-stmt>             -> read <lp> <identifier> {,<identifier>} <rp>;
 <write-stmt>            -> write <lp> <identifier> {,<identifier>} <rp>;
@@ -24,7 +24,7 @@
 
 <expr>                  -> <term> {(+|-) <term>}
 <term>                  -> <factor> {(*|/) <factor>}
-<factor>                -> <operand> | <lp><expr><rp>
+<factor>                -> <operand> | <lp> <expr> <rp>
 
 <lb>                    -> {
 <rb>                    -> }

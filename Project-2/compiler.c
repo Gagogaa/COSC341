@@ -6,7 +6,7 @@
 typedef char *String;
 typedef int bool;
 #define TRUE 1
-#define FALSE 1
+#define FALSE 0
 
 /* List of Tokens:
    MAIN, WHILE, READ, WRITE, IF, ELSE, IDENTIFIER, LEFT_BRACKET,
@@ -48,7 +48,7 @@ typedef int bool;
 
 /* Create the enum of Tokens. */
 #define apply(a) a,
-  typedef enum { TOKENS } token;
+typedef enum { TOKENS } token;
 #undef apply
 
 /* Create an array of strings matching the tokens for pretty printing. */
@@ -61,11 +61,11 @@ typedef struct
   FILE *fp;
   token next_tok;
   char token_buffer[100];
-  String error_msg[100];
   int line_number;
   bool error;
 } CONTEXT;
 
+/* Functions for main. */
 void scan_file(CONTEXT *cont);
 void parse_file(CONTEXT *cont);
 
@@ -77,24 +77,97 @@ void buffer_char(CONTEXT *cont, char character);
 void lexical_error(CONTEXT *cont);
 
 /* Functions for Parser. */
-void parser(CONTEXT *cont);
 void match(token tok, CONTEXT *cont);
+void parser(CONTEXT *cont);
 void program(CONTEXT *cont);
 void statment_list(CONTEXT *cont);
 void statment(CONTEXT *cont);
-void assignment_stmt(CONTEXT *cont);
 void read_statment(CONTEXT *cont);
 void write_statment(CONTEXT *cont);
-void while_statment(CONTEXT *cont);
 void if_statment(CONTEXT *cont);
+void while_statment(CONTEXT *cont);
+void assignment_stmt(CONTEXT *cont);
 void boolean_expression(CONTEXT *cont);
 void relatinal_operator(CONTEXT *cont);
 void operand(CONTEXT *cont);
-void int_literal(CONTEXT *cont);
 void expression(CONTEXT *cont);
 void term(CONTEXT *cont);
 void factor(CONTEXT *cont);
 void syntax_error(token expected, CONTEXT *cont);
+
+int main()
+{
+  CONTEXT cont;
+  cont.line_number = 1;
+  cont.error = FALSE;
+
+  printf("Select: \n\
+1: Scan a file for tokens.\n\
+2: Parse a file.\n");
+
+  int user_input = 0;
+
+  scanf("%d", &user_input);
+
+  switch (user_input)
+  {
+  case 1: scan_file(&cont); break;
+  case 2: parse_file(&cont); break;
+  default: printf("Invalid option %d\n", user_input); break;
+  }
+
+  return 0;
+}
+
+/*
+   Takes in user input to read from a source file and pretty print the
+   token list to a out file.
+*/
+void scan_file(CONTEXT *cont)
+{
+  char in_file[100], out_file[100];
+
+  printf("Please enter a file to scan:\n");
+  scanf("%s", in_file);
+  printf("Please enter an output file:\n");
+  scanf("%s", out_file);
+
+  cont->fp = fopen(in_file, "r");
+
+  FILE *fout = fopen(out_file, "w");
+
+  token tok;
+
+  do
+  {
+    tok = scanner(cont);
+
+    fprintf(fout, "%s\n", TokenStrings[(int)tok]);
+  }
+  while (tok != SCANOFF);
+
+  fclose(cont->fp);
+  fclose(fout);
+}
+
+/*
+  Takes in a file to parse and prints out syntax and lexical errors or
+  a success message.
+*/
+void parse_file(CONTEXT *cont)
+{
+  char in_file[100];
+  printf("Please enter a file to parse:\n");
+  scanf("%s", in_file);
+
+  cont->fp = fopen(in_file, "r");
+  parser(cont);
+
+  fclose(cont->fp);
+
+  if(!cont->error)
+    printf("Parsing successful!\n");
+}
 
 /*
   bool CheckToUpperCase(String str)
@@ -125,11 +198,16 @@ token check_reserved(CONTEXT *cont)
   return IDENTIFIER;
 }
 
+/*
+  Clears the Token buffer by placing a NULL character at the beginning
+  of the array.
+*/
 void clear_buffer(CONTEXT *cont)
 {
   cont->token_buffer[0] = '\0';
 }
 
+/* Adds a character to the buffer ensuring a NULL character follows it. */
 void buffer_char(CONTEXT *cont, char character)
 {
   char *ptr = strchr(cont->token_buffer, '\0');
@@ -137,24 +215,19 @@ void buffer_char(CONTEXT *cont, char character)
   *(ptr+1) = '\0';
 }
 
+/* Prints a lexical error to the screen including a line number. */
 void lexical_error(CONTEXT *cont)
 {
+  cont->error = TRUE;
   printf("lexical error on line %d\n", cont->line_number);
 }
 
+/*
+   A state machine that returns the next locigal token in a xmicro
+   source file.
+*/
 token scanner(CONTEXT *cont)
 {
-
-  /* /\* TODO: Think about moveing this to the main. *\/ */
-  /* if (cont->fp == NULL) */
-  /* { */
-  /*   cont->error = TRUE; */
-
-  /*   /\* TODO: change the content of this string. Or move it to the lexical_error function. *\/ */
-  /*   strcpy(*cont->error_msg, "File Not Found\n"); */
-  /*   return SCANOFF; */
-  /* } */
-
   char character;
 
   while (TRUE)
@@ -163,12 +236,13 @@ token scanner(CONTEXT *cont)
 
     clear_buffer(cont);
 
+    /* Check for Identifiers. */
     if (isalpha(character))
     {
       do
       {
-	buffer_char(cont, character);
-	character = getc(cont->fp);
+        buffer_char(cont, character);
+        character = getc(cont->fp);
       }
       while (isalnum(character));
 
@@ -180,8 +254,8 @@ token scanner(CONTEXT *cont)
     {
       do
       {
-	buffer_char(cont, character);
-	character = getc(cont->fp);
+        buffer_char(cont, character);
+        character = getc(cont->fp);
       }
       while (isdigit(character));
 
@@ -218,14 +292,14 @@ token scanner(CONTEXT *cont)
       character = getc(cont->fp);
       if (character == '/')
       {
-	do
-	  character = getc(cont->fp);
-	while (character != '\n' && character != EOF);
+        do
+          character = getc(cont->fp);
+        while (character != '\n' && character != EOF);
       }
       else
       {
-	ungetc(character, cont->fp);
-	return DIV_OP;
+        ungetc(character, cont->fp);
+        return DIV_OP;
       }
       break;
 
@@ -233,26 +307,19 @@ token scanner(CONTEXT *cont)
     case ':':
       character = getc(cont->fp);
       if (character == '=')
-	return ASSIGN_OP;
+        return ASSIGN_OP;
 
-      /*
-	TODO: make a testfile with these conditions.
-	e.g. ":6" won't throw an error or ":<" so maybe
-	this should throw an error.
-
-	These should be lexical errors.
-      */
+      ungetc(character, cont->fp);
 
       /* Put the character back because ":" by itself should throw an error. */
       character = ':';
-      /* ungetc(character, cont->fp); */
       break;
 
       /* Check for relatinal operators. */
     case '<':
       character = getc(cont->fp);
       if (character == '=')
-	return LTEQU_OP;
+        return LTEQU_OP;
 
       ungetc(character, cont->fp);
       return LT_OP;
@@ -261,7 +328,7 @@ token scanner(CONTEXT *cont)
     case '>':
       character = getc(cont->fp);
       if (character == '=')
-	return GTEQU_OP;
+        return GTEQU_OP;
 
       ungetc(character, cont->fp);
       return GT_OP;
@@ -271,30 +338,30 @@ token scanner(CONTEXT *cont)
       character = getc(cont->fp);
 
       if (character == '=')
-	return EQU_OP;
+        return EQU_OP;
 
       /* Put the character back because "=" by itself should throw an error. */
       character = '=';
-      /* ungetc(character, cont->fp); */
       break;
 
     case '!':
       character = getc(cont->fp);
 
       if (character == '=')
-	return NOTEQU_OP;
+        return NOTEQU_OP;
+
+      ungetc(character, cont->fp);
 
       /* Put the character back because "!" by itself should throw an error. */
       character = '!';
-      /* ungetc(character, cont->fp); */
       break;
     }
 
-    /* Check for an identifier or keyword. */
+    /* Check for space or throw lexical error. */
     if (isspace(character))
     {
       if (character == '\n')
-	cont->line_number++;
+        cont->line_number++;
     }
     else
       /* Invalid input. */
@@ -304,11 +371,11 @@ token scanner(CONTEXT *cont)
   return SCANOFF;
 }
 
+/* TODO: make a useful comment here. */
 void match(token tok, CONTEXT *cont)
 {
   if (tok != cont->next_tok)
   {
-    /* TODO: remove this line. */
     syntax_error(tok, cont);
   }
 
@@ -344,7 +411,8 @@ void statment_list(CONTEXT *cont)
     statment(cont);
 }
 
-/* <stmt> -> (<read-stmt> | <write-stmt> | <if-stmt> | <while-stmt> | <assignment-stmt>) */
+/* <stmt> -> ( <read-stmt>  | <write-stmt> | <if-stmt>
+             | <while-stmt> | <assignment-stmt>) */
 void statment(CONTEXT *cont)
 {
   switch (cont->next_tok)
@@ -354,10 +422,11 @@ void statment(CONTEXT *cont)
   case IF: if_statment(cont); break;
   case WHILE: while_statment(cont); break;
   case IDENTIFIER: assignment_stmt(cont); break;
-  default: {}; break;
+  default: {}; break; 		/* Make the compiler happy. */
   }
 }
 
+/* <read-stmt> -> read <lp> <identifier> {,<identifier>} <rp>; */
 void read_statment(CONTEXT *cont)
 {
   match(READ, cont);
@@ -372,6 +441,7 @@ void read_statment(CONTEXT *cont)
   match(SEMICOLON, cont);
 }
 
+/* <write-stmt> -> write <lp> <identifier> {,<identifier>} <rp>; */
 void write_statment(CONTEXT *cont)
 {
   match(WRITE, cont);
@@ -386,6 +456,8 @@ void write_statment(CONTEXT *cont)
   match(SEMICOLON, cont);
 }
 
+/* <if-stmt> -> if <lp> <boolean-expr> <rp> <lb> <stmt-list> <rb>
+                [else <lb> <stmt-list> <rb>] */
 void if_statment(CONTEXT *cont)
 {
   match(IF, cont);
@@ -404,6 +476,7 @@ void if_statment(CONTEXT *cont)
   }
 }
 
+/* <while-stmt> -> while <lp> <boolean-expr> <rp> <lb> <stmt-list> <rb> */
 void while_statment(CONTEXT *cont)
 {
   match(WHILE, cont);
@@ -415,6 +488,7 @@ void while_statment(CONTEXT *cont)
   match(RIGHT_BRACKET, cont);
 }
 
+/* <assignment-stmt> -> <identifier> := <expr>; */
 void assignment_stmt(CONTEXT *cont)
 {
   match(IDENTIFIER, cont);
@@ -423,6 +497,7 @@ void assignment_stmt(CONTEXT *cont)
   match(SEMICOLON, cont);
 }
 
+/* <boolean-expr> -> <operand> <relational-operator> <operand> */
 void boolean_expression(CONTEXT *cont)
 {
   operand(cont);
@@ -430,7 +505,7 @@ void boolean_expression(CONTEXT *cont)
   operand(cont);
 }
 
-/* TODO: think about removing this thing. */
+/* <relational-operator> -> (< | > | <= | >= | == | !=) */
 void relatinal_operator(CONTEXT *cont)
 {
   if (
@@ -438,17 +513,12 @@ void relatinal_operator(CONTEXT *cont)
     cont->next_tok == GT_OP ||
     cont->next_tok == LTEQU_OP ||
     cont->next_tok == GTEQU_OP ||
-    cont->next_tok == EQU_OP)
-    /* cont->next_tok == NOTEQU_OP) */
+    cont->next_tok == EQU_OP ||
+    cont->next_tok == NOTEQU_OP)
     match(cont->next_tok, cont);
-  /*
-    yes putting the last one here is a little bit odd but this function needs to
-    "eat" a token if it's not one of the relatinal operators or it throws
-    a whole cascade of syntax errors.
-  */
-  match(NOTEQU_OP, cont);
 }
 
+/* <operand> -> (<identifier> | <integer-literal>) */
 void operand(CONTEXT *cont)
 {
   if (cont->next_tok == IDENTIFIER)
@@ -457,6 +527,7 @@ void operand(CONTEXT *cont)
     match(INT_LITERAL, cont);
 }
 
+/* <expr> -> <term> {(+|-) <term>} */
 void expression(CONTEXT *cont)
 {
   term(cont);
@@ -469,6 +540,7 @@ void expression(CONTEXT *cont)
   }
 }
 
+/* <term> -> <factor> {(*|/) <factor>} */
 void term(CONTEXT *cont)
 {
   factor(cont);
@@ -481,6 +553,7 @@ void term(CONTEXT *cont)
   }
 }
 
+/* <factor> -> <operand> | <lp> <expr> <rp> */
 void factor(CONTEXT *cont)
 {
   if (cont->next_tok == LEFT_PAREN)
@@ -493,77 +566,20 @@ void factor(CONTEXT *cont)
     operand(cont);
 }
 
+/*
+   Prints a syntax error to the screen containing the line number, the
+   expected token, and the received token.
+*/
 void syntax_error(token expected, CONTEXT *cont)
 {
+  cont->error = TRUE;
+
   printf(
     "Syntax error on line %d GOT: %s EXPECTED: %s\n",
     cont->line_number,
     TokenStrings[(int)cont->next_tok],
     TokenStrings[(int)expected]);
-}
 
-void parse_file(CONTEXT *cont)
-{
-  char in_file[100];
-  printf("Please enter a file to parse:\n");
-  scanf("%s", in_file);
-
-  cont->fp = fopen(in_file, "r");
-  parser(cont);
-
-  /* TODO: Print a succssess message if the file has no errors. */
-}
-
-void scan_file(CONTEXT *cont)
-{
-  /* TODO: scan and print to a file. */
-
-  char in_file[100], out_file[100];
-
-  printf("Please enter a file to scan:\n");
-  scanf("%s", in_file);
-  printf("Please enter an output file:\n");
-  scanf("%s", out_file);
-
-  cont->fp = fopen(in_file, "r");
-
-  FILE *fout = fopen(out_file, "w");
-
-  token tok;
-
-  do
-  {
-    tok = scanner(cont);
-
-    fprintf(fout, "%s\n", TokenStrings[(int)tok]);
-  }
-  while (tok != SCANOFF);
-
-  fclose(cont->fp);
-  fclose(fout);
-}
-
-/* TODO create the menu for this application. */
-int main()
-{
-  CONTEXT cont;
-  cont.line_number = 1;
-  cont.error = FALSE;
-
-  printf("Select: \n\
-1: Scan a file for tokens.\n\
-2: Parse a file.\n");
-
-  int user_input = 0;
-
-  scanf("%d", &user_input);
-
-  switch (user_input)
-  {
-  case 1: scan_file(&cont); break;
-  case 2: parse_file(&cont); break;
-  default: printf("Invalid option %d\n", user_input); break;
-  }
-
-  return 0;
+  /* "Eat" the token in some cases this can prevent a cascade of errors. */
+  cont->next_tok = scanner(cont);
 }
