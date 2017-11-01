@@ -32,56 +32,45 @@ static String TokenStrings[] = {
   "LTEQU_OP", "NOTEQU_OP", "ASSIGN_OP", "COMMA"
 };
 
-/*
-  A struct containing the "context" of the program because I didn't
-  want to use global variables.
-*/
-typedef struct
-{
-  FILE *fp;
-  token next_tok;
-  char token_buffer[100];
-  int line_number;
-  bool error;
-} CONTEXT;
+/* Globals for the program. */
+FILE *file_in;
+token next_tok;
+char token_buffer[100];
+int line_number = 1;
+bool error = FALSE;
 
 /* Functions for main. */
-void scan_file(CONTEXT *cont);
-void parse_file(CONTEXT *cont);
+void scan_file();
+void parse_file();
 
 /* Functions for scanner. */
-token scanner(CONTEXT *cont);
-token check_reserved(CONTEXT *cont);
-void clear_buffer(CONTEXT *cont);
-void buffer_char(CONTEXT *cont, char character);
-void lexical_error(CONTEXT *cont);
+token scanner();
+token check_reserved();
+void clear_buffer();
+void buffer_char(char character);
+void lexical_error();
 
 /* Functions for Parser. */
-void match(token tok, CONTEXT *cont);
-void parser(CONTEXT *cont);
-void program(CONTEXT *cont);
-void statment_list(CONTEXT *cont);
-void statment(CONTEXT *cont);
-void read_statment(CONTEXT *cont);
-void write_statment(CONTEXT *cont);
-void if_statment(CONTEXT *cont);
-void while_statment(CONTEXT *cont);
-void assignment_stmt(CONTEXT *cont);
-void boolean_expression(CONTEXT *cont);
-void relatinal_operator(CONTEXT *cont);
-void operand(CONTEXT *cont);
-void expression(CONTEXT *cont);
-void term(CONTEXT *cont);
-void factor(CONTEXT *cont);
-void syntax_error(token expected, CONTEXT *cont);
+void match(token tok);
+void parser();
+void program();
+void statment_list();
+void statment();
+void read_statment();
+void write_statment();
+void if_statment();
+void while_statment();
+void assignment_stmt();
+void boolean_expression();
+void relatinal_operator();
+void operand();
+void expression();
+void term();
+void factor();
+void syntax_error(token expected);
 
 int main()
 {
-  /* Setup the context. */
-  CONTEXT cont;
-  cont.line_number = 1;
-  cont.error = FALSE;
-
   printf("Select: \n\
 1: Scan a file for tokens.\n\
 2: Parse a file.\n");
@@ -92,8 +81,8 @@ int main()
 
   switch (user_input)
   {
-  case 1: scan_file(&cont); break;
-  case 2: parse_file(&cont); break;
+  case 1: scan_file(); break;
+  case 2: parse_file(); break;
   default: printf("Invalid option %d\n", user_input); break;
   }
 
@@ -104,7 +93,7 @@ int main()
    Takes in user input to read from a source file and pretty print the
    token list to a out file.
 */
-void scan_file(CONTEXT *cont)
+void scan_file()
 {
   char in_file[100], out_file[100];
 
@@ -113,7 +102,7 @@ void scan_file(CONTEXT *cont)
   printf("Please enter an output file:\n");
   scanf("%s", out_file);
 
-  cont->fp = fopen(in_file, "r");
+  file_in = fopen(in_file, "r");
 
   FILE *fout = fopen(out_file, "w");
 
@@ -121,13 +110,13 @@ void scan_file(CONTEXT *cont)
 
   do
   {
-    tok = scanner(cont);
+    tok = scanner();
 
     fprintf(fout, "%s\n", TokenStrings[(int)tok]);
   }
   while (tok != SCANOFF);
 
-  fclose(cont->fp);
+  fclose(file_in);
   fclose(fout);
 }
 
@@ -135,31 +124,31 @@ void scan_file(CONTEXT *cont)
   Takes in a file to parse and prints out syntax and lexical errors or
   a success message.
 */
-void parse_file(CONTEXT *cont)
+void parse_file()
 {
   char in_file[100];
   printf("Please enter a file to parse:\n");
   scanf("%s", in_file);
 
-  cont->fp = fopen(in_file, "r");
-  parser(cont);
+  file_in = fopen(in_file, "r");
+  parser();
 
-  fclose(cont->fp);
+  fclose(file_in);
 
-  if (!cont->error)
+  if (!error)
     printf("Parsing successful!\n");
 }
 
 /* Checks if the word just read in is an identifier or a keyword. */
-token check_reserved(CONTEXT *cont)
+token check_reserved()
 {
   /* Check for one of the keywords. */
-  if (strcmp("while", cont->token_buffer) == 0) return WHILE;
-  if (strcmp("if",    cont->token_buffer) == 0) return IF;
-  if (strcmp("else",  cont->token_buffer) == 0) return ELSE;
-  if (strcmp("read",  cont->token_buffer) == 0) return READ;
-  if (strcmp("write", cont->token_buffer) == 0) return WRITE;
-  if (strcmp("main",  cont->token_buffer) == 0) return MAIN;
+  if (strcmp("while", token_buffer) == 0) return WHILE;
+  if (strcmp("if",    token_buffer) == 0) return IF;
+  if (strcmp("else",  token_buffer) == 0) return ELSE;
+  if (strcmp("read",  token_buffer) == 0) return READ;
+  if (strcmp("write", token_buffer) == 0) return WRITE;
+  if (strcmp("main",  token_buffer) == 0) return MAIN;
 
   return IDENTIFIER;
 }
@@ -168,64 +157,64 @@ token check_reserved(CONTEXT *cont)
   Clears the Token buffer by placing a NULL character at the beginning
   of the array.
 */
-void clear_buffer(CONTEXT *cont)
+void clear_buffer()
 {
-  cont->token_buffer[0] = '\0';
+  token_buffer[0] = '\0';
 }
 
 /* Adds a character to the buffer ensuring a NULL character follows it. */
-void buffer_char(CONTEXT *cont, char character)
+void buffer_char(char character)
 {
-  char *ptr = strchr(cont->token_buffer, '\0');
+  char *ptr = strchr(token_buffer, '\0');
   *ptr = character;
   *(ptr+1) = '\0';
 }
 
 /* Prints a lexical error to the screen including a line number. */
-void lexical_error(CONTEXT *cont)
+void lexical_error()
 {
-  cont->error = TRUE;
-  printf("lexical error on line %d\n", cont->line_number);
+  error = TRUE;
+  printf("lexical error on line %d\n", line_number);
 }
 
 /*
    A state machine that returns the next locigal token in a xmicro
    source file.
 */
-token scanner(CONTEXT *cont)
+token scanner()
 {
   char character;
 
   while (TRUE)
   {
-    character = getc(cont->fp);
+    character = getc(file_in);
 
-    clear_buffer(cont);
+    clear_buffer();
 
     /* Check for Identifiers. */
     if (isalpha(character))
     {
       do
       {
-        buffer_char(cont, character);
-        character = getc(cont->fp);
+        buffer_char(character);
+        character = getc(file_in);
       }
       while (isalnum(character));
 
-      ungetc(character, cont->fp);
-      return check_reserved(cont);
+      ungetc(character, file_in);
+      return check_reserved();
     }
     /* Check for int literals. */
     else if (isdigit(character))
     {
       do
       {
-        buffer_char(cont, character);
-        character = getc(cont->fp);
+        buffer_char(character);
+        character = getc(file_in);
       }
       while (isdigit(character));
 
-      ungetc(character, cont->fp);
+      ungetc(character, file_in);
       return INT_LITERAL;
     }
 
@@ -256,27 +245,27 @@ token scanner(CONTEXT *cont)
 
       /* Check for comment or division operator. */
     case '/':
-      character = getc(cont->fp);
+      character = getc(file_in);
       if (character == '/')
       {
         do
-          character = getc(cont->fp);
+          character = getc(file_in);
         while (character != '\n' && character != EOF);
       }
       else
       {
-        ungetc(character, cont->fp);
+        ungetc(character, file_in);
         return DIV_OP;
       }
       break;
 
       /* Check for assignment operator. */
     case ':':
-      character = getc(cont->fp);
+      character = getc(file_in);
       if (character == '=')
         return ASSIGN_OP;
 
-      ungetc(character, cont->fp);
+      ungetc(character, file_in);
 
       /* Put the character back because ":" by itself should throw an error. */
       character = ':';
@@ -284,25 +273,25 @@ token scanner(CONTEXT *cont)
 
       /* Check for relatinal operators. */
     case '<':
-      character = getc(cont->fp);
+      character = getc(file_in);
       if (character == '=')
         return LTEQU_OP;
 
-      ungetc(character, cont->fp);
+      ungetc(character, file_in);
       return LT_OP;
       break;
 
     case '>':
-      character = getc(cont->fp);
+      character = getc(file_in);
       if (character == '=')
         return GTEQU_OP;
 
-      ungetc(character, cont->fp);
+      ungetc(character, file_in);
       return GT_OP;
       break;
 
     case '=':
-      character = getc(cont->fp);
+      character = getc(file_in);
 
       if (character == '=')
         return EQU_OP;
@@ -312,12 +301,12 @@ token scanner(CONTEXT *cont)
       break;
 
     case '!':
-      character = getc(cont->fp);
+      character = getc(file_in);
 
       if (character == '=')
         return NOTEQU_OP;
 
-      ungetc(character, cont->fp);
+      ungetc(character, file_in);
 
       /* Put the character back because "!" by itself should throw an error. */
       character = '!';
@@ -328,225 +317,225 @@ token scanner(CONTEXT *cont)
     if (isspace(character))
     {
       if (character == '\n')
-        cont->line_number++;
+        line_number++;
     }
     else
       /* Invalid input. */
-      lexical_error(cont);
+      lexical_error();
   }
 
   return SCANOFF;
 }
 
 /* TODO: make a useful comment here. */
-void match(token tok, CONTEXT *cont)
+void match(token tok)
 {
-  if (tok != cont->next_tok)
+  if (tok != next_tok)
   {
-    syntax_error(tok, cont);
+    syntax_error(tok);
   }
 
-  cont->next_tok = scanner(cont);
+  next_tok = scanner();
 }
 
 /* Set up variables and match the end of file. */
-void parser(CONTEXT *cont)
+void parser()
 {
-  cont->next_tok = scanner(cont);
-  program(cont);
-  match(SCANOFF, cont);
+  next_tok = scanner();
+  program();
+  match(SCANOFF);
 }
 
 /* <program> -> main <lb> <stmt-list> <rb> */
-void program(CONTEXT *cont)
+void program()
 {
-  match(MAIN, cont);
-  match(LEFT_BRACKET, cont);
-  statment_list(cont);
-  match(RIGHT_BRACKET, cont);
+  match(MAIN);
+  match(LEFT_BRACKET);
+  statment_list();
+  match(RIGHT_BRACKET);
 }
 
 /* <stmt-list> -> {<stmt>}+ */
-void statment_list(CONTEXT *cont)
+void statment_list()
 {
   while (
-    cont->next_tok == READ ||
-    cont->next_tok == WRITE ||
-    cont->next_tok == IF ||
-    cont->next_tok == WHILE ||
-    cont->next_tok == IDENTIFIER)
-    statment(cont);
+    next_tok == READ ||
+    next_tok == WRITE ||
+    next_tok == IF ||
+    next_tok == WHILE ||
+    next_tok == IDENTIFIER)
+    statment();
 }
 
 /* <stmt> -> ( <read-stmt>  | <write-stmt> | <if-stmt>
              | <while-stmt> | <assignment-stmt>) */
-void statment(CONTEXT *cont)
+void statment()
 {
-  switch (cont->next_tok)
+  switch (next_tok)
   {
-  case READ: read_statment(cont); break;
-  case WRITE: write_statment(cont); break;
-  case IF: if_statment(cont); break;
-  case WHILE: while_statment(cont); break;
-  case IDENTIFIER: assignment_stmt(cont); break;
+  case READ: read_statment(); break;
+  case WRITE: write_statment(); break;
+  case IF: if_statment(); break;
+  case WHILE: while_statment(); break;
+  case IDENTIFIER: assignment_stmt(); break;
   default: {}; break; 		/* Make the compiler happy. */
   }
 }
 
 /* <read-stmt> -> read <lp> <identifier> {,<identifier>} <rp>; */
-void read_statment(CONTEXT *cont)
+void read_statment()
 {
-  match(READ, cont);
-  match(LEFT_PAREN, cont);
-  match(IDENTIFIER, cont);
-  while (cont->next_tok == COMMA)
+  match(READ);
+  match(LEFT_PAREN);
+  match(IDENTIFIER);
+  while (next_tok == COMMA)
   {
-    match(COMMA, cont);
-    match(IDENTIFIER, cont);
+    match(COMMA);
+    match(IDENTIFIER);
   }
-  match(RIGHT_PAREN, cont);
-  match(SEMICOLON, cont);
+  match(RIGHT_PAREN);
+  match(SEMICOLON);
 }
 
 /* <write-stmt> -> write <lp> <identifier> {,<identifier>} <rp>; */
-void write_statment(CONTEXT *cont)
+void write_statment()
 {
-  match(WRITE, cont);
-  match(LEFT_PAREN, cont);
-  match(IDENTIFIER, cont);
-  while (cont->next_tok == COMMA)
+  match(WRITE);
+  match(LEFT_PAREN);
+  match(IDENTIFIER);
+  while (next_tok == COMMA)
   {
-    match(COMMA, cont);
-    match(IDENTIFIER, cont);
+    match(COMMA);
+    match(IDENTIFIER);
   }
-  match(RIGHT_PAREN, cont);
-  match(SEMICOLON, cont);
+  match(RIGHT_PAREN);
+  match(SEMICOLON);
 }
 
 /* <if-stmt> -> if <lp> <boolean-expr> <rp> <lb> <stmt-list> <rb>
                 [else <lb> <stmt-list> <rb>] */
-void if_statment(CONTEXT *cont)
+void if_statment()
 {
-  match(IF, cont);
-  match(LEFT_PAREN, cont);
-  boolean_expression(cont);
-  match(RIGHT_PAREN, cont);
-  match(LEFT_BRACKET, cont);
-  statment_list(cont);
-  match(RIGHT_BRACKET, cont);
-  if (cont->next_tok == ELSE)
+  match(IF);
+  match(LEFT_PAREN);
+  boolean_expression();
+  match(RIGHT_PAREN);
+  match(LEFT_BRACKET);
+  statment_list();
+  match(RIGHT_BRACKET);
+  if (next_tok == ELSE)
   {
-    match(ELSE, cont);
-    match(LEFT_BRACKET, cont);
-    statment_list(cont);
-    match(RIGHT_BRACKET, cont);
+    match(ELSE);
+    match(LEFT_BRACKET);
+    statment_list();
+    match(RIGHT_BRACKET);
   }
 }
 
 /* <while-stmt> -> while <lp> <boolean-expr> <rp> <lb> <stmt-list> <rb> */
-void while_statment(CONTEXT *cont)
+void while_statment()
 {
-  match(WHILE, cont);
-  match(LEFT_PAREN, cont);
-  boolean_expression(cont);
-  match(RIGHT_PAREN, cont);
-  match(LEFT_BRACKET, cont);
-  statment_list(cont);
-  match(RIGHT_BRACKET, cont);
+  match(WHILE);
+  match(LEFT_PAREN);
+  boolean_expression();
+  match(RIGHT_PAREN);
+  match(LEFT_BRACKET);
+  statment_list();
+  match(RIGHT_BRACKET);
 }
 
 /* <assignment-stmt> -> <identifier> := <expr>; */
-void assignment_stmt(CONTEXT *cont)
+void assignment_stmt()
 {
-  match(IDENTIFIER, cont);
-  match(ASSIGN_OP, cont);
-  expression(cont);
-  match(SEMICOLON, cont);
+  match(IDENTIFIER);
+  match(ASSIGN_OP);
+  expression();
+  match(SEMICOLON);
 }
 
 /* <boolean-expr> -> <operand> <relational-operator> <operand> */
-void boolean_expression(CONTEXT *cont)
+void boolean_expression()
 {
-  operand(cont);
-  relatinal_operator(cont);
-  operand(cont);
+  operand();
+  relatinal_operator();
+  operand();
 }
 
 /* <relational-operator> -> (< | > | <= | >= | == | !=) */
-void relatinal_operator(CONTEXT *cont)
+void relatinal_operator()
 {
   if (
-    cont->next_tok == LT_OP ||
-    cont->next_tok == GT_OP ||
-    cont->next_tok == LTEQU_OP ||
-    cont->next_tok == GTEQU_OP ||
-    cont->next_tok == EQU_OP ||
-    cont->next_tok == NOTEQU_OP)
-    match(cont->next_tok, cont);
+    next_tok == LT_OP ||
+    next_tok == GT_OP ||
+    next_tok == LTEQU_OP ||
+    next_tok == GTEQU_OP ||
+    next_tok == EQU_OP ||
+    next_tok == NOTEQU_OP)
+    match(next_tok);
 }
 
 /* <operand> -> (<identifier> | <integer-literal>) */
-void operand(CONTEXT *cont)
+void operand()
 {
-  if (cont->next_tok == IDENTIFIER)
-    match(IDENTIFIER, cont);
+  if (next_tok == IDENTIFIER)
+    match(IDENTIFIER);
   else
-    match(INT_LITERAL, cont);
+    match(INT_LITERAL);
 }
 
 /* <expr> -> <term> {(+|-) <term>} */
-void expression(CONTEXT *cont)
+void expression()
 {
-  term(cont);
+  term();
   while (
-    cont->next_tok == PLUS_OP ||
-    cont->next_tok == MINUS_OP)
+    next_tok == PLUS_OP ||
+    next_tok == MINUS_OP)
   {
-    match(cont->next_tok, cont);
-    term(cont);
+    match(next_tok);
+    term();
   }
 }
 
 /* <term> -> <factor> {(*|/) <factor>} */
-void term(CONTEXT *cont)
+void term()
 {
-  factor(cont);
+  factor();
   while (
-    cont->next_tok == MULT_OP ||
-    cont->next_tok == DIV_OP)
+    next_tok == MULT_OP ||
+    next_tok == DIV_OP)
   {
-    match(cont->next_tok, cont);
-    factor(cont);
+    match(next_tok);
+    factor();
   }
 }
 
 /* <factor> -> <operand> | <lp> <expr> <rp> */
-void factor(CONTEXT *cont)
+void factor()
 {
-  if (cont->next_tok == LEFT_PAREN)
+  if (next_tok == LEFT_PAREN)
   {
-    match(LEFT_PAREN, cont);
-    expression(cont);
-    match(RIGHT_PAREN, cont);
+    match(LEFT_PAREN);
+    expression();
+    match(RIGHT_PAREN);
   }
   else
-    operand(cont);
+    operand();
 }
 
 /*
    Prints a syntax error to the screen containing the line number, the
    expected token, and the received token.
 */
-void syntax_error(token expected, CONTEXT *cont)
+void syntax_error(token expected)
 {
-  cont->error = TRUE;
+  error = TRUE;
 
   printf(
     "Syntax error on line %d GOT: %s EXPECTED: %s\n",
-    cont->line_number,
-    TokenStrings[(int)cont->next_tok],
+    line_number,
+    TokenStrings[next_tok],
     TokenStrings[(int)expected]);
 
-  /* "Eat" the token in some cases this can prevent a cascade of errors. */
-  cont->next_tok = scanner(cont);
+  /* "Eat" the token. In some cases this can prevent a cascade of errors. */
+  next_tok = scanner();
 }
