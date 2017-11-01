@@ -1,7 +1,28 @@
+// A valid xmicro program
+// A Comment with bad symbols !@#$
 main {
-	if (1 == 7)
-	   A := 7;
-	else {
-	   B := 7;
-	 }
+  // Test of read and write
+
+  //read(Alpha, Beta, Gamma);
+  //write(A1, B1, C1);
+
+  // Single if statment without an else
+  // TODO the relatinal operators other than != throw the errors...
+  if (1 == 7) {
+    A := 8;
+  }
+
+  // If statment with an else
+  if (A != 8) {
+    Apple := 7;
+  } else { // The else part
+    // Nested if statment
+    if (Apple > 1000) {
+      // Nested while (Mostly just to test out the while)
+      while (B <= 12) {
+        // Assignment with expression
+        Beta := 7 * (5 - 4);
+      }
+    }
+  }
 }
