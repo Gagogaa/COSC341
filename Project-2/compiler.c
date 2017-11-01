@@ -218,7 +218,6 @@ token scanner()
       return INT_LITERAL;
     }
 
-    /*  */
     switch (character)
     {
       /* Check for the end of file. */
