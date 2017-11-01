@@ -7,7 +7,7 @@ main {
 
   // Single if statment without an else
   if (1 == 7) {
-    A := 8;
+     A := 8;
   }
 
   // If statment with an else

@@ -357,13 +357,14 @@ void program()
 /* <stmt-list> -> {<stmt>}+ */
 void statment_list()
 {
+  do
+    statment();
   while (
     next_tok == READ ||
     next_tok == WRITE ||
     next_tok == IF ||
     next_tok == WHILE ||
-    next_tok == IDENTIFIER)
-    statment();
+    next_tok == IDENTIFIER);
 }
 
 /* <stmt> -> ( <read-stmt>  | <write-stmt> | <if-stmt>
@@ -376,8 +377,7 @@ void statment()
   case WRITE: write_statment(); break;
   case IF: if_statment(); break;
   case WHILE: while_statment(); break;
-  case IDENTIFIER: assignment_stmt(); break;
-  default: {}; break;           /* Make the compiler happy. */
+  default: assignment_stmt(); break;
   }
 }
 
@@ -468,9 +468,10 @@ void relatinal_operator()
     next_tok == GT_OP ||
     next_tok == LTEQU_OP ||
     next_tok == GTEQU_OP ||
-    next_tok == EQU_OP ||
-    next_tok == NOTEQU_OP)
+    next_tok == EQU_OP)
     match(next_tok);
+  else
+    match(NOTEQU_OP);
 }
 
 /* <operand> -> (<identifier> | <integer-literal>) */
