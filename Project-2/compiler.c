@@ -327,7 +327,7 @@ token scanner()
   return SCANOFF;
 }
 
-/* TODO: make a useful comment here. */
+/* Match the next token and throw an error if it's not the expected value. */
 void match(token tok)
 {
   if (tok != next_tok)
@@ -378,7 +378,7 @@ void statment()
   case IF: if_statment(); break;
   case WHILE: while_statment(); break;
   case IDENTIFIER: assignment_stmt(); break;
-  default: {}; break; 		/* Make the compiler happy. */
+  default: {}; break;           /* Make the compiler happy. */
   }
 }
 
