@@ -57,22 +57,29 @@
 	(t (f8 (cdr L)))))
 
 ;; Function 9
-;; TODO: can I make my own working member function?
+(defun my-working-version-of-member (x L)
+  (cond ((null L) nil)
+	((equal x (car L)) t)
+	(t (my-working-version-of-member x (cdr L)))))
+
 (defun f9 (L)
   (cond ((null (car L)) nil)
-	((member (car L) (cdr L)) (f9 (cdr L)))
+	((my-working-version-of-member (car L) (cdr L)) (f9 (cdr L)))
 	(t (append (list (car L)) (f9 (cdr L))))))
 
 ;; Funciton 10
 (defun f10 (L M)
   (cond ((null L) nil)
-	((member (car L) M) (f10 (cdr L) M))
+	((my-working-version-of-member (car L) M) (append (list (car L)) (f10 (cdr L) M)))
 	(t (f10 (cdr L) M))))
 
 ;; Function 11
+;; TODO: We can't use the built in mod function :C
+(setq count -1)
 (defun f11 (N)
-  (cond ((equal N 1) t)
+  (cond	((equal count -1) (setq count (- N 1)) (f11 N))
+	((equal 1 count) (setq count -1) t)
+	((equal 0 (mod N count)) (setq count -1) nil)
+	(t (setq count (- count 1)) (f11 N))))
 
-
-
-	))
+;; Function 12
