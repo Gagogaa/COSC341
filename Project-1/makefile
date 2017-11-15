@@ -10,3 +10,6 @@ clean:
 
 run: all
 	./$(TARGET)
+
+format: all
+	uncrustify -c uncrustify.cfg $(TARGET).c

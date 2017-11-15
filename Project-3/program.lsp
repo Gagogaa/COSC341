@@ -6,7 +6,8 @@
 ;; Function 1
 ;; Takes a list L and returns the number of lists L contains.
 (defun f1 (L)
-  (cond ((null (car L)) 0)
+  (cond ((null (car L)) 0) ; '()' has zero elements and '()' == 'nil'
+                           ; so 'nil' has zero elements.
 	((listp (car L)) (+ 1 (f1 (cdr L))))
 	(t (+ 0 (f1 (cdr L))))))
 
@@ -42,6 +43,7 @@
 ;; Function 6
 ;; Takes a list L and returns the first list within L.
 (defun f6 (L)
+  ;; No default needed because '(listp nil)' => 'T' so nil will be returned.
   (cond ((listp (car L)) (car L))
 	(t (f6 (cdr L)))))
 
@@ -49,15 +51,19 @@
 ;; Takes a list L and returns a list contining the lists winthin L.
 (defun f7 (L)
   (cond ((null (car L)) nil)
+	;; If '(car L)' is a list then concatinate it with the lists in '(cdr L)'
 	((listp (car L)) (cons
 			  (car L)
 			  (f7 (cdr L))))
 	(t (f7 (cdr L)))))
 
 ;; Function 8
-;; Takes a list of integers L and returns the product of every integer in L and the lists within L.
+;; Takes a list of integers L and returns the product of every integer
+;; in L and the lists within L.
 (defun f8 (L)
   (cond ((null (car L)) 1)
+	;; If '(car L)' is a list multiply the product of every element
+	;; in that list and the product of the lists in '(cdr L)'
 	((listp (car L)) (* (f8 (car L))
 			    (f8 (cdr L))))
 	((numberp (car L)) (* (car L)
@@ -66,39 +72,48 @@
 
 ;; Function 9
 ;; Takes a symbol x and a list L. Returns T if x is in L and nil otherwise.
-(defun my-working-version-of-member (x L)
+(defun my-member (x L)
   (cond ((null L) nil)
 	((equal x (car L)) t)
-	(t (my-working-version-of-member x (cdr L)))))
+	(t (my-member x (cdr L)))))
 
 ;; Takes a list L and reutrns a list contining no duplicats.
 (defun f9 (L)
   (cond ((null (car L)) nil)
-	((my-working-version-of-member (car L) (cdr L)) (f9 (cdr L)))
+	((my-member (car L) (cdr L)) (f9 (cdr L)))
 	(t (cons (car L) (f9 (cdr L))))))
 
 ;; Funciton 10
-;; Takes two lists L and M and reutrns a list contining the intersecting elements within L and M.
+;; Takes two lists L and M and reutrns a list contining the
+;; intersecting elements within L and M.
 (defun f10 (L M)
   (cond ((null L) nil)
-	((my-working-version-of-member (car L) M) (cons (car L) (f10 (cdr L) M)))
+	;; If '(car L)' is a member of M concatinate '(car L)'
+	;; with the intersection of '(cdr L)' and M.
+	((my-member (car L) M) (cons (car L) (f10 (cdr L) M)))
 	(t (f10 (cdr L) M))))
 
 ;; Function 11
-;; TODO: We can't use the built in mod function :C
-(setq count -1)
+;; Retruns T if x is prime and nil if not. n is a helper variable.
+(defun primep (x n)
+  (cond ((equal n 1) t)
+	((equal (mod x n) 0) nil)
+	(t (primep x (- n 1)))))
+
+;; Takes a number N and returns T if the number if prime and false otherwise.
 (defun f11 (N)
-  (cond	((equal count -1) (setq count (- N 1)) (f11 N))
-	((equal 1 count) (setq count -1) t)
-	((equal 0 (mod N count)) (setq count -1) nil)
-	(t (setq count (- count 1)) (f11 N))))
+  (primep N (- N 1)))
 
 ;; Function 12
+;; Takes a number x and a list of numbers L and inserts x into L in
+;; acending order.
 (defun insert (x L)
-  (cond ((null L) (list x))
+  (cond ((null L) (list x)) ; If the list is empty just return the
+                            ; list containing the one element.
 	((< x (car L)) (cons x L))
 	(t (cons (car L) (insert x (cdr L))))))
 
+;; Takes a list of integers L and returns the sorted list L.
 (defun f12 (L)
   (cond ((null L) nil)
 	(t (insert (car L) (f12 (cdr L))))))
