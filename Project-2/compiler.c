@@ -1,8 +1,8 @@
 /*
-   Gregory Mann
-   Fall 2017
-   COSC 341
-   Project 2
+  Gregory Mann
+  Fall 2017
+  COSC 341
+  Project 2
 */
 
 #include <stdio.h>
@@ -90,8 +90,8 @@ int main()
 }
 
 /*
-   Takes in user input to read from a source file and pretty print the
-   token list to a out file.
+  Takes in user input to read from a source file and pretty print the
+  token list to a out file.
 */
 void scan_file()
 {
@@ -178,8 +178,8 @@ void lexical_error()
 }
 
 /*
-   A state machine that returns the next locigal token in a xmicro
-   source file.
+  A state machine that returns the next locigal token in a xmicro
+  source file.
 */
 token scanner()
 {
@@ -368,7 +368,7 @@ void statment_list()
 }
 
 /* <stmt> -> ( <read-stmt>  | <write-stmt> | <if-stmt>
-             | <while-stmt> | <assignment-stmt>) */
+   | <while-stmt> | <assignment-stmt>) */
 void statment()
 {
   switch (next_tok)
@@ -412,7 +412,7 @@ void write_statment()
 }
 
 /* <if-stmt> -> if <lp> <boolean-expr> <rp> <lb> <stmt-list> <rb>
-                [else <lb> <stmt-list> <rb>] */
+   [else <lb> <stmt-list> <rb>] */
 void if_statment()
 {
   match(IF);
@@ -523,8 +523,8 @@ void factor()
 }
 
 /*
-   Prints a syntax error to the screen containing the line number, the
-   expected token, and the received token.
+  Prints a syntax error to the screen containing the line number, the
+  expected token, and the received token.
 */
 void syntax_error(token expected)
 {
